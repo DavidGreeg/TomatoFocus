@@ -15,8 +15,8 @@ A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notif
 | 💾 Persistent state         | Timer keeps running even if you close the popup or browser windows                |
 | 🔋 Pause/Resume             | Freezes the countdown and resumes later — timer display stays correct             |
 | 📢 Desktop notifications    | Toast messages at every transition                                                |
-| 🪄 Planned: long break      | Configurable long break after *N* cycles                                          |
-| 🚫 Planned: website blocker | Block distracting sites while the work timer is active                            |
+| 🪄 **Planned**: long break      | Configurable long break after *N* cycles                                          |
+| 🚫 **Planned**: website blocker | Block distracting sites while the work timer is active                            |
 
 ---
 
@@ -75,13 +75,6 @@ npm run lint   # coming soon – ESLint/Prettier setup
 
 ## Roadmap
 
--
-
 Contributions welcome via PR or discussion! Feel free to fork and customise.
 
 ---
-
-## License
-
-MIT © 2025 Your Name ([https://github.com/your‑user](https://github.com/your‑user))
-
