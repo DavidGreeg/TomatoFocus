@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="popup.css" />
+  <title>Pomodoro</title>
+</head>
+<body>
+  <h1 id="mode">Work</h1>
+  <div id="timer">25:00</div>
+
+  <div class="buttons">
+    <button id="startPause">Start</button>
+    <button id="reset">Reset</button>
+  </div>
+
+  <details>
+    <summary>⚙ Settings</summary>
+    <label>Work (min): <input type="number" id="workMinutes" min="1" value="25"></label>
+    <label>Break (min): <input type="number" id="breakMinutes" min="1" value="5"></label>
+    <label>Cycles: <input type="number" id="cycles" min="1" value="4"></label>
+    <button id="saveSettings">Save</button>
+    <hr>
+    <button id="testSound">🔊 Test sound</button>
+  </details>
+
+  <script src="popup.js"></script>
+</body>
+</html>

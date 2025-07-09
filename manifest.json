@@ -1,0 +1,18 @@
+{
+  "name": "BetterPomodoro",
+  "description": "Customisable pomodoro timer with alarms(work/break minutes & cycles).",
+  "version": "2.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon-clear_16.png",
+      "48": "icons/icon-clear_48.png",
+      "128": "icons/icon-clear_128.png"
+    }
+  },
+  "background": {
+    "service_worker": "service_worker.js"
+  },
+  "permissions": ["storage", "notifications", "alarms", "offscreen"]
+}
