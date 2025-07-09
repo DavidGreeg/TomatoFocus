@@ -1,7 +1,7 @@
 {
-  "name": "BetterPomodoro",
+  "name": "TomatoFocus",
   "description": "Customisable pomodoro timer with alarms(work/break minutes & cycles).",
-  "version": "2.0",
+  "version": "1.0",
   "manifest_version": 3,
   "action": {
     "default_popup": "popup.html",
