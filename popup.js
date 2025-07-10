@@ -3,7 +3,11 @@ const timerEl = $("timer"), modeEl = $("mode"), startBtn = $("startPause");
 const longBreakToggle = $("enableLongBreak"), longBreakSettings = $("longBreakSettings");
 
 function updateLongBreakUI() {
-  longBreakSettings.style.display = longBreakToggle.checked ? "" : "none";
+  const on = longBreakToggle.checked;
+  longBreakSettings.style.display = on ? "" : "none";
+  longBreakSettings
+    .querySelectorAll("input")
+    .forEach(el => (el.disabled = !on));
 }
 if (longBreakToggle) {
   longBreakToggle.addEventListener("change", updateLongBreakUI);
@@ -22,14 +26,18 @@ startBtn.addEventListener("click", ()=> chrome.runtime.sendMessage({cmd:"toggle"
 $("reset").addEventListener("click", ()=> chrome.runtime.sendMessage({cmd:"reset"}));
 
 /************ settings load ************/
-chrome.storage.local.get(["settings"], ({settings})=>{
-  if(settings){
-    $("workMinutes").value=settings.work;
-    $("breakMinutes").value=settings.break;
-    $("cycles").value=settings.cycles;
-    $("longBreak").value=settings.longBreak ?? 15;
-    $("longBreakEvery").value=settings.longBreakEvery ?? 4;
+chrome.storage.local.get(["settings"], ({settings}) => {
+  if (settings) {
+    $("workMinutes").value = settings.work;
+    $("breakMinutes").value = settings.break;
+    $("cycles").value = settings.cycles;
+    longBreakToggle.checked = settings.enableLongBreak ?? false;
+    $("longBreak").value = settings.longBreak ?? 15;
+    $("longBreakEvery").value = settings.longBreakEvery ?? 4;
+  } else {
+    longBreakToggle.checked = false;
   }
+  updateLongBreakUI();
 });
 
 /************ save settings ************/
@@ -37,10 +45,15 @@ $("saveSettings").addEventListener("click", ()=>{
   const settings={
     work:+$("workMinutes").value,
     break:+$("breakMinutes").value,
-    cycles:+$("cycles").value,
-    longBreak:+$("longBreak").value,
-    longBreakEvery:+$("longBreakEvery").value
+    cycles:+$("cycles").value
   };
+  if (longBreakToggle.checked) {
+    settings.enableLongBreak = true;
+    settings.longBreak = +$("longBreak").value;
+    settings.longBreakEvery = +$("longBreakEvery").value;
+  } else {
+    settings.enableLongBreak = false;
+  }
   chrome.storage.local.set({settings}, ()=>{
     chrome.runtime.sendMessage({cmd:"settingsUpdated"});
     alert("Saved! New values apply on next reset/start.");

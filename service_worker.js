@@ -1,5 +1,5 @@
 /***** defaults *****/
-const DEF = { work: 25, break: 5, cycles: 4, longBreak: 15, longBreakEvery: 4 };
+const DEF = { work: 25, break: 5, cycles: 4, longBreak: 15, longBreakEvery: 4, enableLongBreak: true };
 let SET   = { ...DEF };
 
 /***** state *****/
@@ -12,6 +12,7 @@ chrome.runtime.onInstalled.addListener(init);
 async function init() {
   const { settings, state } = await chrome.storage.local.get(["settings", "state"]);
   if (settings) SET = { ...DEF, ...settings };
+  if (!SET.enableLongBreak) SET.longBreakEvery = Infinity;
   if (state)    st  = { ...st,  ...state    };
   st.total = SET.cycles;
   await ensureOffscreen();
@@ -80,7 +81,7 @@ function transition(now) {
     }
 
     // Determine break length (long or short)
-    const long = (st.workDone % SET.longBreakEvery === 0);
+    const long = SET.enableLongBreak && (st.workDone % SET.longBreakEvery === 0);
     const mins = long ? (SET.longBreakMin ?? SET.longBreak ?? SET.break) : SET.break;
     st.mode = long ? "longBreak" : "break";
     st.end  = now + mins * 60000;
@@ -160,6 +161,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
     case "settingsUpdated": {
       chrome.storage.local.get(["settings"], ({ settings }) => {
         SET = { ...DEF, ...settings };
+        if (!SET.enableLongBreak) SET.longBreakEvery = Infinity;
         st.total = SET.cycles;
       });
       break;
