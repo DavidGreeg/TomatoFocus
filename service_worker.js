@@ -1,5 +1,5 @@
 /***** defaults *****/
-const DEF = { work: 25, break: 5, cycles: 4 };
+const DEF = { work: 25, break: 5, cycles: 4, longBreak: 15, longBreakEvery: 4 };
 let SET   = { ...DEF };
 
 /***** state *****/
@@ -115,7 +115,9 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
         cycle: st.cycle,
         totalCycles: st.total,
         minutes: Math.floor(rem / 60000),
-        seconds: Math.floor((rem % 60000) / 1000)
+        seconds: Math.floor((rem % 60000) / 1000),
+        longBreak: SET.longBreak,
+        longBreakEvery: SET.longBreakEvery
       });
       break;
     }
