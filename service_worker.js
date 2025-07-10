@@ -73,11 +73,13 @@ function transition(now) {
       return;
     }
 
-    // Otherwise start a break
-    st.mode = "break";
-    st.end  = now + SET.break * 60000;
+    // Determine break length (long or short)
+    const long = (st.workDone % SET.longBreakEvery === 0);
+    const mins = long ? SET.longBreak : SET.break;
+    st.mode = long ? "longBreak" : "break";
+    st.end  = now + mins * 60000;
     play("break");
-    notify("Break time!", `Relax ${SET.break} min.`);
+    notify(long ? "Long break!" : "Break time!", `Relax ${mins} min.`);
   } else {
     // Finished a break ➜ start next work
     st.cycle++;
