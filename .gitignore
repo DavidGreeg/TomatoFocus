@@ -5,3 +5,6 @@ backups/
 # image and audio files
 icons/
 sounds/
+# files
+todo-list*
+done-list*

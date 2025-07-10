@@ -1,8 +1,8 @@
-# Pomodoro Timer Chrome Extension
+# TomatoFocus – Pomodoro Timer Extension
 
 A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notifications and sound alarms. It helps you stay focused by timing work/break cycles — and a built‑in website blocker is on the roadmap.
 
-> **Status:** MVP complete – work/break cycles, per‑session sounds, custom durations. Roadmap includes a long‑break option and optional site‑blocking.
+> **Status:** Basic features complete – work/break cycles, optional long breaks and per‑session sounds. Roadmap includes optional site‑blocking.
 
 ---
 
@@ -15,7 +15,7 @@ A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notif
 | 💾 Persistent state         | Timer keeps running even if you close the popup or browser windows                |
 | 🔋 Pause/Resume             | Freezes the countdown and resumes later — timer display stays correct             |
 | 📢 Desktop notifications    | Toast messages at every transition                                                |
-| 🪄 **Planned**: long break      | Configurable long break after *N* cycles                                          |
+| 🪄 Long break             | Configurable long break after *N* cycles                                          |
 | 🚫 **Planned**: website blocker | Block distracting sites while the work timer is active                            |
 
 ---
@@ -24,7 +24,7 @@ A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notif
 
 1. **Clone** or download this repo.
 2. Chrome → `chrome://extensions` → toggle **Developer mode**.
-3. Click **Load unpacked** → select the `pomodoro-timer/` folder.
+3. Click **Load unpacked** → select the `TomatoFocus/` folder.
 4. Pin the tomato icon (optional).
 
 > **Sound files:** Drop your own 128‑kbps MP3s into `sounds/` named `start.mp3`, `work.mp3`, `break.mp3`, `finish.mp3` (or keep the defaults).
@@ -35,7 +35,7 @@ A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notif
 
 1. Click the extension icon.
 2. Open **⚙ Settings**.
-3. Enter *Work (min)*, *Break (min)*, *Cycles*, and (soon) *Long break*.
+3. Enter *Work (min)*, *Break (min)*, *Cycles*, and optional *Long break* settings.
 4. Hit **Save** → **Test sound** once to unlock autoplay.
 5. Press **Start**.
 
@@ -54,8 +54,8 @@ Button states:
 
 ```bash
 # one‑time setup
-git clone https://github.com/<your‑user>/pomodoro-timer.git
-cd pomodoro-timer
+git clone https://github.com/<your‑user>/TomatoFocus.git
+cd TomatoFocus
 
 # after changes
 npm run lint   # coming soon – ESLint/Prettier setup
