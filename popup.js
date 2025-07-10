@@ -14,12 +14,24 @@ $("reset").addEventListener("click", ()=> chrome.runtime.sendMessage({cmd:"reset
 
 /************ settings load ************/
 chrome.storage.local.get(["settings"], ({settings})=>{
-  if(settings){ $("workMinutes").value=settings.work; $("breakMinutes").value=settings.break; $("cycles").value=settings.cycles; }
+  if(settings){
+    $("workMinutes").value=settings.work;
+    $("breakMinutes").value=settings.break;
+    $("cycles").value=settings.cycles;
+    $("longBreak").value=settings.longBreak ?? 15;
+    $("longBreakEvery").value=settings.longBreakEvery ?? 4;
+  }
 });
 
 /************ save settings ************/
 $("saveSettings").addEventListener("click", ()=>{
-  const settings={ work:+$("workMinutes").value, break:+$("breakMinutes").value, cycles:+$("cycles").value };
+  const settings={
+    work:+$("workMinutes").value,
+    break:+$("breakMinutes").value,
+    cycles:+$("cycles").value,
+    longBreak:+$("longBreak").value,
+    longBreakEvery:+$("longBreakEvery").value
+  };
   chrome.storage.local.set({settings}, ()=>{
     chrome.runtime.sendMessage({cmd:"settingsUpdated"});
     alert("Saved! New values apply on next reset/start.");
