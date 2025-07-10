@@ -1,5 +1,14 @@
 const $ = id => document.getElementById(id);
 const timerEl = $("timer"), modeEl = $("mode"), startBtn = $("startPause");
+const longBreakToggle = $("enableLongBreak"), longBreakSettings = $("longBreakSettings");
+
+function updateLongBreakUI() {
+  longBreakSettings.style.display = longBreakToggle.checked ? "" : "none";
+}
+if (longBreakToggle) {
+  longBreakToggle.addEventListener("change", updateLongBreakUI);
+  updateLongBreakUI();
+}
 
 /************ live updates ************/
 chrome.runtime.sendMessage({cmd:"getState"}, refresh);
