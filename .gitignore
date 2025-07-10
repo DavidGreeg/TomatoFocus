@@ -1,7 +1,7 @@
 # temporary build / zip files
 *.zip
 # backup files
-backup*/
+backups/
 # image and audio files
 icons/
 sounds/
