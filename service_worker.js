@@ -75,7 +75,7 @@ function transition(now) {
 
     // Determine break length (long or short)
     const long = (st.workDone % SET.longBreakEvery === 0);
-    const mins = long ? SET.longBreak : SET.break;
+    const mins = long ? (SET.longBreakMin ?? SET.longBreak ?? SET.break) : SET.break;
     st.mode = long ? "longBreak" : "break";
     st.end  = now + mins * 60000;
     play("break");
