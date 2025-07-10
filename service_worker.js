@@ -1,5 +1,5 @@
 /***** defaults *****/
-const DEF = { work: 25, break: 5, cycles: 4 };
+const DEF = { work: 25, break: 5, cycles: 4, longBreak: 15, longBreakEvery: 4 };
 let SET   = { ...DEF };
 
 /***** state *****/
@@ -49,6 +49,12 @@ async function play(sound) {
   }
 }
 
+function playSeq(arr) {
+  ensureOffscreen().then(() =>
+    chrome.runtime.sendMessage({ cmd: "playSoundSeq", sounds: arr }).catch(()=>{})
+  );
+}
+
 /***** main clock *****/
 setInterval(tick, 1000);
 function tick() {
@@ -73,11 +79,19 @@ function transition(now) {
       return;
     }
 
-    // Otherwise start a break
-    st.mode = "break";
-    st.end  = now + SET.break * 60000;
-    play("break");
-    notify("Break time!", `Relax ${SET.break} min.`);
+    // Determine break length (long or short)
+    const long = (st.workDone % SET.longBreakEvery === 0);
+    const mins = long ? (SET.longBreakMin ?? SET.longBreak ?? SET.break) : SET.break;
+    st.mode = long ? "longBreak" : "break";
+    st.end  = now + mins * 60000;
+
+    if (long) {
+      playSeq(["break", "longbreak"]);
+    } else {
+      play("break")
+	}
+
+    notify(long ? "Long break!" : "Break time!", `Relax ${mins} min.`);
   } else {
     // Finished a break ➜ start next work
     st.cycle++;
@@ -115,7 +129,9 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
         cycle: st.cycle,
         totalCycles: st.total,
         minutes: Math.floor(rem / 60000),
-        seconds: Math.floor((rem % 60000) / 1000)
+        seconds: Math.floor((rem % 60000) / 1000),
+        longBreak: SET.longBreak,
+        longBreakEvery: SET.longBreakEvery
       });
       break;
     }

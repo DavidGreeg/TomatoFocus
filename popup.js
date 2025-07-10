@@ -14,12 +14,24 @@ $("reset").addEventListener("click", ()=> chrome.runtime.sendMessage({cmd:"reset
 
 /************ settings load ************/
 chrome.storage.local.get(["settings"], ({settings})=>{
-  if(settings){ $("workMinutes").value=settings.work; $("breakMinutes").value=settings.break; $("cycles").value=settings.cycles; }
+  if(settings){
+    $("workMinutes").value=settings.work;
+    $("breakMinutes").value=settings.break;
+    $("cycles").value=settings.cycles;
+    $("longBreak").value=settings.longBreak ?? 15;
+    $("longBreakEvery").value=settings.longBreakEvery ?? 4;
+  }
 });
 
 /************ save settings ************/
 $("saveSettings").addEventListener("click", ()=>{
-  const settings={ work:+$("workMinutes").value, break:+$("breakMinutes").value, cycles:+$("cycles").value };
+  const settings={
+    work:+$("workMinutes").value,
+    break:+$("breakMinutes").value,
+    cycles:+$("cycles").value,
+    longBreak:+$("longBreak").value,
+    longBreakEvery:+$("longBreakEvery").value
+  };
   chrome.storage.local.set({settings}, ()=>{
     chrome.runtime.sendMessage({cmd:"settingsUpdated"});
     alert("Saved! New values apply on next reset/start.");
@@ -36,6 +48,7 @@ function playLocal(sound){
 function refresh(s){
   const m=String(s.minutes).padStart(2,"0"), sec=String(s.seconds).padStart(2,"0");
   timerEl.textContent=`${m}:${sec}`;
-  modeEl.textContent=`${s.mode.charAt(0).toUpperCase()+s.mode.slice(1)} (${s.cycle+1}/${s.totalCycles})`;
+  const label=s.mode==="longBreak"?"Long Break":s.mode.charAt(0).toUpperCase()+s.mode.slice(1);
+  modeEl.textContent=`${label} (${s.cycle+1}/${s.totalCycles})`;
   startBtn.textContent=s.running ? "Pause" : (s.paused ?  "Resume" : "Start"); // Change time tracking display
 }
