@@ -20,10 +20,12 @@
     <label>Work (min): <input type="number" id="workMinutes" min="1" value="25"></label>
     <label>Break (min): <input type="number" id="breakMinutes" min="1" value="5"></label>
     <label>Cycles: <input type="number" id="cycles" min="1" value="4"></label>
-    <label><input type="checkbox" id="enableLongBreak" checked> Long break</label>
-    <div id="longBreakSettings">
-      <label>Long Break (min): <input type="number" id="longBreak" min="1" value="15"></label>
-      <label>Long Break every (cycles): <input type="number" id="longBreakEvery" min="1" value="4"></label>
+	<div id="longBreakToggleRow" style="margin-bottom:0.6rem">
+      <label class="long-break-toggle"><input type="checkbox" id="enableLongBreak" checked> Long break</label>
+	</div>
+    <div id="longBreakSettings" style="margin-bottom:0.6rem">
+      <label class="settings-row">Long Break (min): <input type="number" id="longBreak" min="1" value="15"></label>
+      <label class="settings-row">Long Break every (cycles): <input type="number" id="longBreakEvery" min="1" value="4"></label>
     </div>
     <button id="saveSettings">Save</button>
     <hr>
