@@ -48,7 +48,7 @@ function playLocal(sound){
 function refresh(s){
   const m=String(s.minutes).padStart(2,"0"), sec=String(s.seconds).padStart(2,"0");
   timerEl.textContent=`${m}:${sec}`;
-  const label=s.mode==="longBreak"?"Long break":s.mode.charAt(0).toUpperCase()+s.mode.slice(1);
+  const label=s.mode==="longBreak"?"Long Break":s.mode.charAt(0).toUpperCase()+s.mode.slice(1);
   modeEl.textContent=`${label} (${s.cycle+1}/${s.totalCycles})`;
   startBtn.textContent=s.running ? "Pause" : (s.paused ?  "Resume" : "Start"); // Change time tracking display
 }

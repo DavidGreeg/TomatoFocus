@@ -49,6 +49,12 @@ async function play(sound) {
   }
 }
 
+function playSeq(arr) {
+  ensureOffscreen().then(() =>
+    chrome.runtime.sendMessage({ cmd: "playSoundSeq", sounds: arr }).catch(()=>{})
+  );
+}
+
 /***** main clock *****/
 setInterval(tick, 1000);
 function tick() {
@@ -78,7 +84,13 @@ function transition(now) {
     const mins = long ? (SET.longBreakMin ?? SET.longBreak ?? SET.break) : SET.break;
     st.mode = long ? "longBreak" : "break";
     st.end  = now + mins * 60000;
-    play("break");
+
+    if (long) {
+      playSeq(["break", "longbreak"]);
+    } else {
+      play("break")
+	}
+
     notify(long ? "Long break!" : "Break time!", `Relax ${mins} min.`);
   } else {
     // Finished a break ➜ start next work
