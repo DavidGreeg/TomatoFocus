@@ -14,5 +14,14 @@
   "background": {
     "service_worker": "service_worker.js"
   },
-  "permissions": ["storage", "notifications", "alarms", "offscreen"]
+  "permissions": [
+    "storage",
+    "notifications",
+    "alarms",
+    "offscreen",
+    "declarativeNetRequest"
+  ],
+  "host_permissions": [
+    "*://*/*"
+  ]
 }

@@ -1,4 +1,24 @@
 /***** defaults *****/
+const PERMA_BLOCK = [
+  "facebook.com",
+  "twitter.com",
+  "instagram.com",
+  "youtube.com",
+  "duolingo.com",
+  "deeeep.io",
+  "diep.io",
+  "deepl.com",
+  { regex: '^([a-z0-9-]+\\.)*colonist\\.io($|/)' },
+  { regex: '^([a-z0-9-]+\\.)*diep\\.io($|/)' },
+  { regex: '^([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
+  "slither.io",
+  "zombsroyale.io",
+  "agar.io",
+  "nitrotype.com"
+];
+const RULE_ID_BASE = 1000; // avoid collision with future dynamic rules
+// chrome.declarativeNetRequest.testMatchOutcome({request: { url: "https://www.youtube.com/", type: "main_frame" }, tabId: -1}, r => console.log(r));
+
 const DEF = { work: 25, break: 5, cycles: 4, longBreak: 15, longBreakEvery: 4, enableLongBreak: true };
 let SET   = { ...DEF };
 
@@ -15,7 +35,13 @@ async function init() {
   if (!SET.enableLongBreak) SET.longBreakEvery = Infinity;
   if (state)    st  = { ...st,  ...state    };
   st.total = SET.cycles;
+
+  // off-screen doc (for sounds)
   await ensureOffscreen();
+  // permanent block rules
+  await installBlockerRules();
+
+  // start timer loop
   tick();
 }
 
@@ -176,4 +202,58 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
 /***** notifier *****/
 function notify(title, message) {
   chrome.notifications.create({ type: "basic", iconUrl: "icons/icon128.png", title, message });
+}
+
+/***** blocker *****/
+async function installBlockerRules () {
+  /* ---------------------------------
+     0. Remove *all* existing rules
+     --------------------------------- */
+  const all = await chrome.declarativeNetRequest.getDynamicRules();
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    removeRuleIds: all.map(r => r.id),   // nuke everything
+    addRules: []
+  });
+
+  /* ---------------------------------
+     1. Build fresh redirect rules
+     --------------------------------- */
+  const rules = PERMA_BLOCK.map((entry, i) => {
+    const baseId = RULE_ID_BASE + i;
+    if (typeof entry === 'string') {
+      // plain host  →  urlFilter with ABP anchors
+      return {
+        id: baseId,
+        priority: 1,
+        action: { type: 'redirect',
+                  redirect: { url: 'https://www.google.com/' } },
+        condition: {
+          urlFilter: `||${entry}^`,
+          resourceTypes: ['main_frame', 'sub_frame']
+        }
+      };
+    }
+
+    // { regex: '...' } → regexFilter rule
+    return {
+      id: baseId,
+      priority: 1,
+      action: { type: 'redirect',
+                redirect: { url: 'https://www.google.com/' } },
+      condition: {
+        regexFilter: entry.regex,
+        resourceTypes: ['main_frame', 'sub_frame']
+      }
+    };
+  });
+
+  /* ---------------------------------
+     2. Add them
+     --------------------------------- */
+  await chrome.declarativeNetRequest.updateDynamicRules({
+    addRules: rules,
+    removeRuleIds: []    // none to remove now
+  });
+
+  console.log("[Blocker] redirect rules installed:", rules.length);
 }
