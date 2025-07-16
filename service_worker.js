@@ -1,4 +1,7 @@
 /***** defaults *****/
+function hostFilters(host) {
+  return [`||${host}/`, `||*.${host}/`];
+}
 const PERMA_BLOCK = [
   "facebook.com",
   "twitter.com",
@@ -8,13 +11,17 @@ const PERMA_BLOCK = [
   "deeeep.io",
   "diep.io",
   "deepl.com",
-  { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*colonist\\.io($|/)' },
+  // { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*colonist\\.io(?::\\d+)?(?:\\/|$)' },
+  // { regex: "^https?:\\/\\/(?:[a-z0-9-]+\\.)?colonist\\.io(?::\\d+)?(?:\\/|$)" },
   { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*diep\\.io($|/)' },
   { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
   "slither.io",
-  "zombsroyale.io",
   "agar.io",
-  "nitrotype.com"
+  "colonist.io",
+  // ...hostFilters("colonist.io"),
+  "nitrotype.com",
+  "wco.tv",
+  "catflix.su"
 ];
 const RULE_ID_BASE = 1000; // avoid collision with future dynamic rules
 // chrome.declarativeNetRequest.testMatchOutcome({request: { url: "https://www.youtube.com/", type: "main_frame" }, tabId: -1}, r => console.log(r));
@@ -204,7 +211,9 @@ function notify(title, message) {
   chrome.notifications.create({ type: "basic", iconUrl: "icons/icon128.png", title, message });
 }
 
-/***** blocker *****/
+/* ------------------------
+ *    WEBSITE BLOCKER
+ * ------------------------ */
 async function installBlockerRules () {
   /* ---------------------------------
      0. Remove *all* existing rules
@@ -229,7 +238,9 @@ async function installBlockerRules () {
                   redirect: { url: 'https://www.google.com/' } },
         condition: {
           urlFilter: `||${entry}^`,
-          resourceTypes: ['main_frame', 'sub_frame']
+          resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image",
+                          "font", "object", "xmlhttprequest", "ping", "csp_report",
+                          "media", "websocket", "other"]
         }
       };
     }
@@ -242,7 +253,9 @@ async function installBlockerRules () {
                 redirect: { url: 'https://www.google.com/' } },
       condition: {
         regexFilter: entry.regex,
-        resourceTypes: ['main_frame', 'sub_frame']
+        resourceTypes: ["main_frame", "sub_frame", "stylesheet", "script", "image",
+                        "font", "object", "xmlhttprequest", "ping", "csp_report",
+                        "media", "websocket", "other"]
       }
     };
   });
