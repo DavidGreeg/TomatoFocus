@@ -6,5 +6,9 @@ backup*/
 icons/
 sounds/
 # files
+tailwind_build-HR.css
 todo-list*
 done-list*
+# resources
+package-lock.json
+node_modules/

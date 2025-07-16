@@ -1,0 +1,24 @@
+{
+  "name": "tomatofocus",
+  "version": "1.0.0",
+  "description": "A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notifications and sound alarms. It helps you stay focused by timing work/break cycles — and a built‑in website blocker is on the roadmap.",
+  "main": "done-list.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DavidGreeg/TomatoFocus.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DavidGreeg/TomatoFocus/issues"
+  },
+  "homepage": "https://github.com/DavidGreeg/TomatoFocus#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.1.11",
+    "tailwindcss": "^4.1.11"
+  }
+}

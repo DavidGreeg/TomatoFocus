@@ -1,46 +1,11 @@
-body { 
-  width:220px;
-  font-family:sans-serif;
-  text-align:center;
-  margin:0;
-  padding:1rem;
+/* Remove default body margin */
+body {
+  margin: 0;
 }
-#mode {
-  margin:0 0 .5rem;
+
+/* Style for the active navigation button */
+.nav-button.active {
+  background-color: #4f46e5; /* A nice indigo color */
+  color: white;
 }
-#timer {
-  font:700 2.5rem/1 monospace;
-  margin-bottom:.8rem;
-}
-.buttons button {
-  margin:0 .25rem;
-  padding:.4rem .8rem;
-  font-size:.9rem;
-}
-label {
-  display:block;
-  margin-top:.4rem;
-  font-size:.85rem;
-}
-input[type=number]{
-  width:2.2rem;
-}
-summary { 
-  cursor:pointer;
-  margin-top:.8rem;
-}
-#testSound {
-  margin-top:.5rem;
-  width:100%;
-}
-#longBreakToggleRow {
-  margin-bottom: 0.6rem;
-}
-#longBreakSettings {
-  margin-bottom: 0.6rem;
-}
-.settings-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
+

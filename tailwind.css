@@ -1,0 +1,64 @@
+/* --------------------------------------------------------------
+ *  BUILD INSTRUCTIONS  ·  Tailwind CSS
+ * --------------------------------------------------------------
+ *  Generates:  tailwind_build.css   (minified production sheet)
+ *
+ *  Basic command:
+ *    npx --no-install tailwindcss \
+ *        -i ./tailwind.css \
+ *        -o ./tailwind_build.css --minify
+ *
+ *  Prerequisites (for local development only):
+ *    • Node.js ≥ 18   (tested with v18.19.0)
+ *    • npm ≥ 9        (tested with v9.2.0)
+ *    • Tailwind CSS v4 CLI
+ *        Install once per project:
+ *          npm install -D tailwindcss @tailwindcss/cli
+ *
+ *  Notes:
+ *    • Remove the '--minify' flag during development for a readable file.
+ *    • The compiled CSS is the *only* file shipped in the final extension;
+ *      Node.js and the CLI are build‑time dependencies only.
+ *    • Update the input/output paths above if you move this file.
+ * -------------------------------------------------------------- */
+@import "tailwindcss";
+
+/* ---- your own rules that use @apply ---- */
+@layer components {
+  /* Basic styles for control buttons if needed */
+  .control-button {
+    @apply px-5 py-2 rounded-md font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-colors;
+  }
+
+  /* Styles for settings section */
+  .settings-details {
+    @apply mt-4;
+  }
+
+  .setting-label {
+    @apply flex justify-between items-center text-sm text-slate-600 mt-2;
+  }
+
+  .setting-input {
+    @apply w-16 p-1 border rounded-md text-right;
+  }
+
+  /* Style for the list of blocked sites */
+  .blocked-site-item {
+    @apply flex items-center justify-between p-2 bg-slate-100 rounded-md;
+  }
+
+  .remove-site-button {
+    @apply text-red-500 font-bold hover:text-red-700 transition-colors;
+  }
+
+  .control-button {
+    @apply px-5 py-2 rounded-md font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-colors;
+  }
+  .settings-details { @apply mt-4; }
+  .setting-label    { @apply flex justify-between items-center text-sm text-slate-600 mt-2; }
+  .setting-input    { @apply w-16 p-1 border rounded-md text-right; }
+  .blocked-site-item{ @apply flex items-center justify-between p-2 bg-slate-100 rounded-md; }
+  .remove-site-button{ @apply text-red-500 font-bold hover:text-red-700 transition-colors; }
+}
+

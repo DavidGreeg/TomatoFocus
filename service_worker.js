@@ -3,7 +3,7 @@ function hostFilters(host) {
   return [`||${host}/`, `||*.${host}/`];
 }
 const PERMA_BLOCK = [
-  "facebook.com",
+  // "facebook.com",
   "twitter.com",
   "instagram.com",
   "youtube.com",
