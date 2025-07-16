@@ -1,28 +1,5 @@
 /***** defaults *****/
-function hostFilters(host) {
-  return [`||${host}/`, `||*.${host}/`];
-}
-const PERMA_BLOCK = [
-  // "facebook.com",
-  "twitter.com",
-  "instagram.com",
-  "youtube.com",
-  "duolingo.com",
-  "deeeep.io",
-  "diep.io",
-  "deepl.com",
-  // { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*colonist\\.io(?::\\d+)?(?:\\/|$)' },
-  // { regex: "^https?:\\/\\/(?:[a-z0-9-]+\\.)?colonist\\.io(?::\\d+)?(?:\\/|$)" },
-  { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*diep\\.io($|/)' },
-  { regex: '^https?:\\/\\/([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
-  "slither.io",
-  "agar.io",
-  "colonist.io",
-  // ...hostFilters("colonist.io"),
-  "nitrotype.com",
-  "wco.tv",
-  "catflix.su"
-];
+// Default sites are stored by popup.js under `defaultSites` in chrome.storage
 const RULE_ID_BASE = 1000; // avoid collision with future dynamic rules
 // chrome.declarativeNetRequest.testMatchOutcome({request: { url: "https://www.youtube.com/", type: "main_frame" }, tabId: -1}, r => console.log(r));
 
@@ -37,16 +14,26 @@ let st = { mode: "work", running: false, end: null, cycle: 0, total: SET.cycles,
 chrome.runtime.onStartup.addListener(init);
 chrome.runtime.onInstalled.addListener(init);
 async function init() {
-  const { settings, state } = await chrome.storage.local.get(["settings", "state"]);
+  const { settings, state, defaultSites = [], userBlockedSites } = await chrome.storage.local.get(["settings", "state", "defaultSites", "userBlockedSites"]);
   if (settings) SET = { ...DEF, ...settings };
   if (!SET.enableLongBreak) SET.longBreakEvery = Infinity;
   if (state)    st  = { ...st,  ...state    };
   st.total = SET.cycles;
 
+  if (!Array.isArray(userBlockedSites)) {
+    await chrome.storage.local.set({ userBlockedSites: Array.isArray(defaultSites) ? [...defaultSites] : [] });
+  }
+
   // off-screen doc (for sounds)
   await ensureOffscreen();
   // permanent block rules
   await installBlockerRules();
+
+  chrome.storage.onChanged.addListener((changes, area) => {
+    if (area === 'local' && (changes.userBlockedSites || changes.defaultSites)) {
+      installBlockerRules();
+    }
+  });
 
   // start timer loop
   tick();
@@ -215,6 +202,15 @@ function notify(title, message) {
  *    WEBSITE BLOCKER
  * ------------------------ */
 async function installBlockerRules () {
+  const { userBlockedSites = [], defaultSites = [] } = await chrome.storage.local.get(['userBlockedSites','defaultSites']);
+  const combinedSites = Array.isArray(defaultSites) ? [...defaultSites] : [];
+  for (const site of userBlockedSites) {
+    if (typeof site === 'string') {
+      if (!combinedSites.includes(site)) combinedSites.push(site);
+    } else {
+      combinedSites.push(site);
+    }
+  }
   /* ---------------------------------
      0. Remove *all* existing rules
      --------------------------------- */
@@ -227,7 +223,7 @@ async function installBlockerRules () {
   /* ---------------------------------
      1. Build fresh redirect rules
      --------------------------------- */
-  const rules = PERMA_BLOCK.map((entry, i) => {
+  const rules = combinedSites.map((entry, i) => {
     const baseId = RULE_ID_BASE + i;
     if (typeof entry === 'string') {
       // plain host  →  urlFilter with ABP anchors

@@ -1,6 +1,30 @@
 document.addEventListener('DOMContentLoaded', () => {
   const $ = id => document.getElementById(id);
 
+  const defaultSites = [
+    'twitter.com',
+    'instagram.com',
+    'youtube.com',
+    'duolingo.com',
+    'deeeep.io',
+    'diep.io',
+    'deepl.com',
+    { name: 'Diep clones', regex: '^https?:\\/\\/([a-z0-9-]+\\.)*diep\\.io($|/)' },
+    { name: 'Zombs clones', regex: '^https?:\\/\\/([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
+    'slither.io',
+    'agar.io',
+    'colonist.io',
+    'nitrotype.com',
+    'wco.tv',
+    'catflix.su'
+  ];
+
+  chrome.storage.local.get(['defaultSites'], ({ defaultSites: stored }) => {
+    if (!Array.isArray(stored)) {
+      chrome.storage.local.set({ defaultSites });
+    }
+  });
+
   // --- Tab Navigation ---
   const navPomodoro = $('nav-pomodoro');
   const navBlocker = $('nav-blocker');
@@ -101,37 +125,76 @@ document.addEventListener('DOMContentLoaded', () => {
   const blockedSitesList = $('blocked-sites-list');
 
   async function renderBlockedSites() {
-    const { userBlockedSites = [] } = await chrome.storage.local.get("userBlockedSites");
+    const data = await chrome.storage.local.get(['userBlockedSites', 'defaultSites']);
+    let userBlockedSites = Array.isArray(data.userBlockedSites) ? data.userBlockedSites : [];
+    let storedDefaults   = Array.isArray(data.defaultSites) ? data.defaultSites : defaultSites;
+
+    if (!data.defaultSites) {
+      await chrome.storage.local.set({ defaultSites: storedDefaults });
+    }
+
+    if (!Array.isArray(data.userBlockedSites)) {
+      await chrome.storage.local.set({ userBlockedSites });
+    }
+
+    const allSites = [
+      ...storedDefaults.map((site, index) => ({ site, type: 'default', index })),
+      ...userBlockedSites.map((site, index) => ({ site, type: 'user', index }))
+    ];
+
     blockedSitesList.innerHTML = '';
-    
-    if (userBlockedSites.length === 0) {
+
+    if (allSites.length === 0) {
       blockedSitesList.innerHTML = `<p class="text-slate-500 text-center">No websites added yet.</p>`;
     }
 
-    userBlockedSites.forEach(site => {
+    allSites.forEach(({ site, type, index }) => {
       const listItem = document.createElement('li');
-      listItem.className = 'blocked-site-item';
-      
+      listItem.className = 'blocked-site-item flex items-center space-x-1';
+
       const siteName = document.createElement('span');
-      siteName.textContent = site;
       siteName.className = 'font-mono text-sm';
-      
+      if (typeof site === 'string') {
+        siteName.textContent = site;
+      } else {
+        siteName.textContent = site.name;
+        siteName.dataset.regex = site.regex;
+      }
+
       const removeButton = document.createElement('button');
       removeButton.textContent = '✖';
       removeButton.className = 'remove-site-button';
-      removeButton.dataset.site = site;
-      
+      removeButton.dataset.type = type;
+      removeButton.dataset.index = index;
+
       removeButton.addEventListener('click', async () => {
-        const siteToRemove = removeButton.dataset.site;
-        const { userBlockedSites = [] } = await chrome.storage.local.get("userBlockedSites");
-        const newBlockedSites = userBlockedSites.filter(s => s !== siteToRemove);
-        await chrome.storage.local.set({ userBlockedSites: newBlockedSites });
-        // No need to call render again, storage listener in service_worker handles rules.
-        // We just re-render the popup list.
-        renderBlockedSites(); 
+        const { userBlockedSites = [], defaultSites = [] } = await chrome.storage.local.get(['userBlockedSites', 'defaultSites']);
+        if (removeButton.dataset.type === 'user') {
+          userBlockedSites.splice(index, 1);
+          await chrome.storage.local.set({ userBlockedSites });
+        } else {
+          defaultSites.splice(index, 1);
+          await chrome.storage.local.set({ defaultSites });
+        }
+        renderBlockedSites();
       });
 
       listItem.appendChild(siteName);
+      if (typeof site !== 'string') {
+        const toggleBtn = document.createElement('button');
+        toggleBtn.textContent = 'regex';
+        toggleBtn.className = 'toggle-regex-button';
+        toggleBtn.addEventListener('click', () => {
+          if (siteName.textContent === site.name) {
+            siteName.textContent = site.regex;
+            toggleBtn.textContent = 'name';
+          } else {
+            siteName.textContent = site.name;
+            toggleBtn.textContent = 'regex';
+          }
+        });
+        listItem.appendChild(toggleBtn);
+      }
       listItem.appendChild(removeButton);
       blockedSitesList.appendChild(listItem);
     });
