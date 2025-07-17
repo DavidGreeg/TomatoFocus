@@ -153,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
       listItem.className = 'blocked-site-item flex items-center space-x-1';
 
       const siteName = document.createElement('span');
-      siteName.className = 'font-mono text-sm';
+      siteName.className = 'text-sm';
       if (typeof site === 'string') {
         siteName.textContent = site;
       } else {
@@ -187,9 +187,11 @@ document.addEventListener('DOMContentLoaded', () => {
         toggleBtn.addEventListener('click', () => {
           if (siteName.textContent === site.name) {
             siteName.textContent = site.regex;
+            siteName.classList.add('regex-text');
             toggleBtn.textContent = 'name';
           } else {
             siteName.textContent = site.name;
+            siteName.classList.remove('regex-text');
             toggleBtn.textContent = 'regex';
           }
         });
