@@ -52,6 +52,18 @@
     @apply text-red-500 font-bold hover:text-red-700 transition-colors;
   }
 
+  .nav-button {
+    @apply text-left w-full p-2 rounded-md font-semibold transition-colors hover:bg-slate-700 hover:text-white;
+  }
+
+  .toggle-regex-button {
+    @apply text-xs ml-1 px-1.5 py-0.5 rounded border border-sky-500 text-sky-600 hover:bg-sky-100 transition-colors;
+  }
+
+  .regex-text {
+    @apply font-mono whitespace-nowrap overflow-x-auto inline-block max-w-full;
+  }
+
   .control-button {
     @apply px-5 py-2 rounded-md font-semibold text-white bg-slate-600 hover:bg-slate-700 transition-colors;
   }
