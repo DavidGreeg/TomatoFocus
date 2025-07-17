@@ -122,6 +122,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Website Blocker Logic ---
   const newSiteInput = $('new-site-input');
   const addSiteButton = $('add-site-button');
+  const inputModeToggle = $('input-mode-toggle');
+  let regexMode = false;
+
+  inputModeToggle.addEventListener('click', () => {
+    regexMode = !regexMode;
+    inputModeToggle.textContent = regexMode ? '(.*)' : 'WWW';
+  });
   const blockedSitesList = $('blocked-sites-list');
 
   async function renderBlockedSites() {
@@ -180,24 +187,23 @@ document.addEventListener('DOMContentLoaded', () => {
       });
 
       listItem.appendChild(siteName);
+      const actions = document.createElement('div');
+      actions.className = 'flex items-center space-x-1';
       if (typeof site !== 'string') {
         const toggleBtn = document.createElement('button');
         toggleBtn.textContent = 'regex';
         toggleBtn.className = 'toggle-regex-button';
         toggleBtn.addEventListener('click', () => {
-          if (siteName.textContent === site.name) {
-            siteName.textContent = site.regex;
-            siteName.classList.add('regex-text');
-            toggleBtn.textContent = 'name';
-          } else {
-            siteName.textContent = site.name;
-            siteName.classList.remove('regex-text');
-            toggleBtn.textContent = 'regex';
-          }
+          const showingName = siteName.textContent === site.name;
+          siteName.textContent = showingName ? site.regex : site.name;
+          siteName.classList.toggle('regex-text', showingName);
+          listItem.classList.toggle('regex-item', showingName);
+          toggleBtn.textContent = showingName ? 'name' : 'regex';
         });
-        listItem.appendChild(toggleBtn);
+        actions.appendChild(toggleBtn);
       }
-      listItem.appendChild(removeButton);
+      actions.appendChild(removeButton);
+      listItem.appendChild(actions);
       blockedSitesList.appendChild(listItem);
     });
   }
@@ -206,18 +212,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const newSite = newSiteInput.value.trim();
     if (!newSite) return;
 
-    // Basic validation to extract domain
-    let domain = newSite;
-    try {
-      domain = new URL(newSite).hostname;
-    } catch (_) {
-      // It's not a full URL, assume it's a domain
-      domain = newSite.replace(/^www\./, '');
+    const { userBlockedSites = [] } = await chrome.storage.local.get('userBlockedSites');
+
+    let newEntry;
+    if (regexMode) {
+      newEntry = { name: newSite, regex: newSite };
+    } else {
+      let domain = newSite;
+      try {
+        domain = new URL(newSite).hostname;
+      } catch (_) {
+        domain = newSite.replace(/^www\./, '');
+      }
+      newEntry = domain;
     }
-    
-    const { userBlockedSites = [] } = await chrome.storage.local.get("userBlockedSites");
-    if (!userBlockedSites.includes(domain)) {
-      const newBlockedSites = [...userBlockedSites, domain];
+
+    const exists = userBlockedSites.some(s => JSON.stringify(s) === JSON.stringify(newEntry));
+    if (!exists) {
+      const newBlockedSites = [...userBlockedSites, newEntry];
       await chrome.storage.local.set({ userBlockedSites: newBlockedSites });
       newSiteInput.value = '';
       renderBlockedSites();
