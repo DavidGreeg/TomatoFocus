@@ -61,7 +61,15 @@
   }
 
   .regex-text {
-    @apply font-mono whitespace-nowrap overflow-x-auto inline-block max-w-full;
+    @apply font-mono text-xs whitespace-nowrap overflow-x-auto block max-w-full px-0.5;
+  }
+
+  .regex-item {
+    @apply py-1;
+  }
+
+  .mode-toggle-button {
+    @apply bg-slate-200 font-extrabold px-2 py-2 rounded-md hover:bg-slate-300 transition-colors;
   }
 
   .control-button {
