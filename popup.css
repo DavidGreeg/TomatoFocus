@@ -17,8 +17,8 @@ body {
 
 /* Thin scrollbars with subtle colors */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 0.375rem;
+  height: 0.375rem;
 }
 
 ::-webkit-scrollbar-track {
@@ -27,11 +27,17 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #94a3b8; /* slate-400 */
-  border-radius: 3px;
+  border-radius: 0.1875rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b; /* slate-500 */
+}
+
+/* Extra slim scrollbar for regex items */
+.slim-scrollbar::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
 }
 
 .regex-text{
@@ -39,13 +45,20 @@ body {
   white-space:nowrap;
   overflow-x:auto;
   display:block;
-  max-width:90%;
+  max-width:62.5%;
   padding-top:0.15rem;
   padding-bottom:0.05rem;
 }
 
-.regex-item{
+
+.blocked-regex-item{
   padding: calc(var(--spacing) * 1.5);
+}
+
+.blocked-site-item span{
+  max-width:62.5%;
+  display:block;
+  overflow-x:auto;
 }
 
 .mode-toggle-button{
@@ -54,9 +67,43 @@ body {
   padding:0.5rem;
   border-radius:0.375rem;
   transition-property:background-color;
-  transition-duration:150ms
+  transition-duration:150ms;
+  width:4rem;
+  position:relative;
 }
 
 .mode-toggle-button:hover{
   background-color:#cbd5e1
+}
+
+.note-dismiss{
+  margin-left:0.25rem;
+  color:#94a3b8;
+  background:none;
+  border:none;
+  cursor:pointer;
+  font-weight:700;
+}
+.note-dismiss:hover{
+  color:#64748b;
+}
+
+.mode-toggle-button.narrow-font{
+  font-weight:500;
+}
+
+.mode-toggle-button[data-tip]:hover::after{
+  content: attr(data-tip);
+  position:absolute;
+  bottom:100%;
+  left:50%;
+  transform:translateX(-50%);
+  background:#1e293b;
+  color:#fff;
+  font-size:0.625rem;
+  padding:0.125rem 0.25rem;
+  border-radius:0.25rem;
+  white-space:pre-wrap;
+  width:4.5rem;
+  text-align:center;
 }
