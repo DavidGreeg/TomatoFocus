@@ -741,27 +741,3 @@
     }
   }
 }
-.regex-text{
-  font-size:0.75rem;
-  white-space:nowrap;
-  overflow-x:auto;
-  display:block;
-  max-width:100%;
-  padding-left:0.125rem;
-  padding-right:0.125rem
-}
-.regex-item{
-  padding-top:0.4rem;
-  padding-bottom:0.3rem
-}
-.mode-toggle-button{
-  background-color:#e2e8f0;
-  font-weight:800;
-  padding:0.5rem;
-  border-radius:0.375rem;
-  transition-property:background-color;
-  transition-duration:150ms
-}
-.mode-toggle-button:hover{
-  background-color:#cbd5e1
-}
