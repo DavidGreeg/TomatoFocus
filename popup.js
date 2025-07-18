@@ -124,10 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
   const addSiteButton = $('add-site-button');
   const inputModeToggle = $('input-mode-toggle');
   let regexMode = false;
+  inputModeToggle.dataset.tip = 'web\ndomain';
+  inputModeToggle.classList.add('narrow-font');
+
+  const note = document.querySelector('.blocker-note');
+  const dismissBtn = document.getElementById('dismiss-note');
+  if (dismissBtn) {
+    dismissBtn.addEventListener('click', () => note?.remove());
+  }
 
   inputModeToggle.addEventListener('click', () => {
     regexMode = !regexMode;
     inputModeToggle.textContent = regexMode ? '(.*)' : 'WWW';
+    inputModeToggle.dataset.tip = regexMode ? 'regular\nexpression' : 'web\ndomain';
+    inputModeToggle.classList.toggle('narrow-font', !regexMode);
   });
   const blockedSitesList = $('blocked-sites-list');
 
@@ -197,7 +207,8 @@ document.addEventListener('DOMContentLoaded', () => {
           const showingName = siteName.textContent === site.name;
           siteName.textContent = showingName ? site.regex : site.name;
           siteName.classList.toggle('regex-text', showingName);
-          listItem.classList.toggle('regex-item', showingName);
+          siteName.classList.toggle('slim-scrollbar', showingName);
+          listItem.classList.toggle('blocked-regex-item', showingName);
           toggleBtn.textContent = showingName ? 'name' : 'regex';
         });
         actions.appendChild(toggleBtn);

@@ -61,10 +61,11 @@
   }
 
   .regex-text {
-    @apply font-mono text-xs whitespace-nowrap overflow-x-auto block max-w-full px-0.5;
+    @apply font-mono text-xs whitespace-nowrap overflow-x-auto block px-0.5;
+    max-width:62.5%;
   }
 
-  .regex-item {
+  .blocked-regex-item {
     @apply py-1;
   }
 

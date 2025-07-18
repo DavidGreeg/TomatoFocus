@@ -491,6 +491,11 @@
     background-color: var(--color-slate-100);
     padding: calc(var(--spacing) * 2);
   }
+  .blocked-site-item span {
+    max-width: 62.5%;
+    overflow-x: auto;
+    display: block;
+  }
   .remove-site-button {
     --tw-font-weight: var(--font-weight-bold);
     font-weight: var(--font-weight-bold);
@@ -547,7 +552,7 @@
   }
   .regex-text {
     display: block;
-    max-width: 100%;
+    max-width: 62.5%;
     overflow-x: auto;
     padding-inline: calc(var(--spacing) * 0.5);
     font-family: var(--font-mono);
@@ -555,7 +560,7 @@
     line-height: var(--tw-leading, var(--text-xs--line-height));
     white-space: nowrap;
   }
-  .regex-item {
+  .blocked-regex-item {
     padding-block: calc(var(--spacing) * 1);
   }
   .mode-toggle-button {
@@ -565,6 +570,8 @@
     padding-block: calc(var(--spacing) * 2);
     --tw-font-weight: var(--font-weight-extrabold);
     font-weight: var(--font-weight-extrabold);
+    width:4rem;
+    position:relative;
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
@@ -573,6 +580,25 @@
         background-color: var(--color-slate-300);
       }
     }
+  }
+  .mode-toggle-button.narrow-font {
+    --tw-font-weight: var(--font-weight-medium);
+    font-weight: var(--font-weight-medium);
+  }
+  .mode-toggle-button[data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #1e293b;
+    color: #fff;
+    font-size: 0.625rem;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+    white-space: pre-wrap;
+    width: 4.5rem;
+    text-align: center;
   }
   .control-button {
     border-radius: var(--radius-md);
@@ -618,6 +644,11 @@
     border-radius: var(--radius-md);
     background-color: var(--color-slate-100);
     padding: calc(var(--spacing) * 2);
+  }
+  .blocked-site-item span {
+    max-width: 62.5%;
+    overflow-x: auto;
+    display: block;
   }
   .remove-site-button {
     --tw-font-weight: var(--font-weight-bold);
