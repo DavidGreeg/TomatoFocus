@@ -49,6 +49,7 @@
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
     --default-mono-font-family: var(--font-mono);
+    --datatip-font: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
   }
 }
 @layer base {
@@ -570,6 +571,7 @@
     padding-block: calc(var(--spacing) * 2);
     --tw-font-weight: var(--font-weight-extrabold);
     font-weight: var(--font-weight-extrabold);
+    font-family:"Trebuchet MS","Arial Narrow",sans-serif;
     width:4rem;
     position:relative;
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to;
@@ -584,6 +586,15 @@
   .mode-toggle-button.narrow-font {
     --tw-font-weight: var(--font-weight-medium);
     font-weight: var(--font-weight-medium);
+    letter-spacing: 75%;
+    font-stretch: 80%;
+  }
+
+  .mode-toggle-button[data-tip] {
+    font-family: var(--datatip-font);
+    font-weight: var(--font-weight-extrabold);
+    font-stretch: 100%;
+    letter-spacing: normal;
   }
   .mode-toggle-button[data-tip]:hover::after {
     content: attr(data-tip);
@@ -593,6 +604,10 @@
     transform: translateX(-50%);
     background-color: #1e293b;
     color: #fff;
+    font-family: var(--datatip-font);
+    font-weight: var(--font-weight-extrabold);
+    font-stretch: 100%;
+    letter-spacing: normal;
     font-size: 0.625rem;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
