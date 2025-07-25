@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Word Definitions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            background-color: rgba(255, 255, 255, 0.93);
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+            text-align: center;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            font-size: 1.4rem;
+            line-height: 1.8;
+            color: #34495e;
+            margin: 30px 0;
+        }
+        
+        .definition-word {
+            color: #e74c3c;
+            text-decoration: underline;
+            cursor: pointer;
+            position: relative;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .definition-word:hover {
+            color: #c0392b;
+            text-shadow: 0 0 3px rgba(231, 76, 60, 0.3);
+        }
+        
+        .tooltip {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #2c3e50;
+            color: white;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 1rem;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            pointer-events: none;
+        }
+        
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 8px;
+            border-style: solid;
+            border-color: #2c3e50 transparent transparent transparent;
+        }
+        
+        .definition-word:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+            transition-delay: 0.5s;
+        }
+        
+        .instructions {
+            background-color: #e8f4f8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 30px;
+            font-size: 0.9rem;
+            color: #2980b9;
+        }
+        
+        .highlight {
+            background-color: #fef9e7;
+            padding: 2px 5px;
+            border-radius: 3px;
+            font-weight: 600;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 25px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .content {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Word Definitions on Hover</h1>
+        <p class="subtitle">Hover over the highlighted words to see their definitions</p>
+        
+        <div class="content">
+            <p>
+                In the field of <span class="definition-word">lexicography
+                    <span class="tooltip">The practice of compiling dictionaries</span>
+                </span>, 
+                scholars often encounter <span class="definition-word">neologisms
+                    <span class="tooltip">Newly coined words or expressions</span>
+                </span> 
+                that challenge traditional categorization. The 
+                <span class="definition-word">etymology
+                    <span class="tooltip">The study of the origin of words</span>
+                </span> 
+                of such terms can be particularly fascinating, revealing much about cultural 
+                <span class="definition-word">zeitgeist
+                    <span class="tooltip">The defining spirit or mood of a particular period</span>
+                </span>.
+            </p>
+            
+            <p style="margin-top: 25px;">
+                Modern technology has accelerated the creation of 
+                <span class="definition-word">portmanteaus
+                    <span class="tooltip">Words formed by combining two other words</span>
+                </span>, 
+                with many digital natives displaying remarkable 
+                <span class="definition-word">perspicacity
+                    <span class="tooltip">Keen mental understanding and insight</span>
+                </span> 
+                in their linguistic innovations. This phenomenon represents a significant 
+                <span class="definition-word">paradigm
+                    <span class="tooltip">A typical example or pattern of something</span>
+                </span> 
+                shift in how language evolves.
+            </p>
+        </div>
+        
+        <div class="instructions">
+            <p>✨ <span class="highlight">Hover over any highlighted word</span> for 0.5 seconds to see its definition appear in a tooltip.</p>
+        </div>
+    </div>
+</body>
+</html>
