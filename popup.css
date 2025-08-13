@@ -8,11 +8,6 @@ body {
   --datatip-font: var(--default-font-family, ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji");
 }
 
-/* Style for the active navigation button */
-.nav-button.active {
-  background-color: #4f46e5; /* A nice indigo color */
-  color: white;
-}
 
 /* Small helper text in blocker view */
 .blocker-note {
@@ -46,22 +41,27 @@ body {
 }
 
 .regex-text{
+  color:#76570a;
   font-size:0.75rem;
   white-space:nowrap;
   overflow-x:auto;
   display:block;
-  max-width:62.5%;
-  padding-top:0.15rem;
-  padding-bottom:0.05rem;
+  /* max-width:62.5%; */
+  max-width:71%;
+  padding-top:0.25rem;
+  /* padding-bottom:0.05rem; */
 }
 
 
 .blocked-regex-item{
-  padding: calc(var(--spacing) * 1.5);
+  padding-top:0.4rem;
+  padding-bottom:0.4rem;
+  /* padding: calc(var(--spacing) * 1.5); */
 }
 
 .blocked-site-item span{
-  max-width:62.5%;
+  /* max-width:62.5%; */
+  max-width:71%;
   display:block;
   overflow-x:auto;
 }
@@ -78,73 +78,17 @@ body {
   color:#64748b;
 }
 
-/* .mode-toggle-button{ */
-/*   background-color:#e2e8f0; */
-/*   font-weight:1000; */
-  /* letter-spacing:-1px; */
-  /* font-family:"Trebuchet MS","Arial Narrow",sans-serif; */
-  /* font-family: "Arial Narrow", sans-serif; */
-/*   font-family: "DejaVu Sans Mono", monospace; */
-/*   padding:0.5rem; */
-/*   border-radius:0.375rem; */
-/*   transition-property:background-color; */
-/*   transition-duration:150ms; */
-/*   width:4rem; */
-/*   position:relative; */
-/* } */
-
 .mode-toggle-button:hover{
   background-color:#cbd5e1
 }
 
-/* .mode-toggle-button.narrow-font{ */
-/*   font-family: "Arial Narrow", sans-serif; */
-  /* font-family: "Times", serif; */
-//font-family:var(-/* -d */atatip-font); commented
-/*   font-weight:500; */
-  /* letter-spacing:-1px; */
-  /* font-stretch:80%; */
-  /* font-stretch: condensed; */
-  /* font-stretch: ultra-condensed; */
-  /* transform: scale(0.8,1); */
-/*   transform: scaleX(0.8); */
-/* } */
-
-/* .mode-toggle-button[data-tip]{ */
-  /* font-family:var(--datatip-font); */
-  /* font-family: "Times", serif; */
-  /* font-weight:800; */
-  /* font-stretch:100%; */
-  /* letter-spacing:normal; */
-  /* letter-spacing:-1px; */
-  /* letter-spacing: -0.05rem; */
-/*   transform: scaleX(1); */
-  /* transform: scale(1,1); */
-/* } */
-
-/* .mode-toggle-button[data-tip]:hover::after{ */
-/*   content: attr(data-tip); */
-/*   position:absolute; */
-  /* position: relative; */
-/*   bottom:100%; */
-/*   left:50%; */
-/*   transform:translateX(-50%); */
-  /* transform: scaleX(1); */
-  /* transform: scale(0.5,0.5); */
-  /* transform: scale(1,1); */
-/*   background:#1e293b; */
-/*   color:#fff; */
-  /* font-family:var(--datatip-font); */
-  /* font-family: "Times", serif; */
-/*   font-weight:800; */
-  /* font-stretch:100%; */
-  /* font-stretch:normal; */
-/*   letter-spacing:normal; */
-  /* letter-spacing:-1px; */
-/*   font-size:0.625rem; */
-/*   padding:0.125rem 0.25rem; */
-/*   border-radius:0.25rem; */
-/*   white-space:pre-wrap; */
-/*   width:4.5rem; */
-/*   text-align:center; */
-/* } */
+/*
+ * .control-button
+ * .settings-details
+ * .setting-label
+ * .setting-input
+ * .blocked-site-item
+ * .blocked-site-item span
+ * .remove-site-button
+ * .nav-button
+ */
