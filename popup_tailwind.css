@@ -42,6 +42,8 @@
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
     --text-sm--line-height: calc(1.25 / 0.875);
+    --text-ll: 1rem;
+    --text-ll--line-height: calc(1.5 / 1);
     --text-lg: 1.125rem;
     --text-lg--line-height: calc(1.75 / 1.125);
     --text-2xl: 1.5rem;
@@ -306,6 +308,9 @@
   .rounded-md {
     border-radius: var(--radius-md);
   }
+  .rounded-ll {
+    border-radius: 10%;
+  }
   .border {
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -373,6 +378,10 @@
   .text-lg {
     font-size: var(--text-lg);
     line-height: var(--tw-leading, var(--text-lg--line-height));
+  }
+  .text-ll {
+    font-size: var(--text-ll);
+    line-height: var(--tw-leading, var(--text-ll--line-height));
   }
   .text-sm {
     font-size: var(--text-sm);

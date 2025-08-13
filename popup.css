@@ -82,6 +82,12 @@ body {
   background-color:#cbd5e1
 }
 
+.logoimg{
+    width: 80px;
+	height: 80px;
+    border-radius: 50%;
+}
+
 /*
  * .control-button
  * .settings-details
