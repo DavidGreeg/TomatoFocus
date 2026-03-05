@@ -27,59 +27,92 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Tab Navigation ---
   const navPomodoro = $('nav-pomodoro');
-  const navBlocker = $('nav-blocker');
+  const navWebsiteBlock = $('nav-website-block');
+  const websiteBlockList = $('website-block-list');
+  const navSitesList = $('nav-sites-list');
+  const navTimeSchedule = $('nav-time-schedule');
+  const navHabitTracker = $('nav-habit-tracker');
+
   const pomodoroView = $('pomodoro-view');
-  const blockerView = $('blocker-view');
-  const views = [pomodoroView, blockerView];
+  const sitesListView = $('sites-list-view');
+  const views = [pomodoroView, sitesListView];
+
+  function setListButtonExpanded(button, isExpanded) {
+    button.classList.toggle('expanded', isExpanded);
+    button.setAttribute('aria-expanded', String(isExpanded));
+  }
+
+  function toggleWebsiteBlockList(forceExpanded) {
+    const shouldExpand = typeof forceExpanded === 'boolean'
+      ? forceExpanded
+      : websiteBlockList.classList.contains('hidden');
+
+    websiteBlockList.classList.toggle('hidden', !shouldExpand);
+    setListButtonExpanded(navWebsiteBlock, shouldExpand);
+  }
 
   function showView(viewToShow) {
     views.forEach(view => {
       view.classList.add('hidden');
     });
     viewToShow.classList.remove('hidden');
-    
+
     navPomodoro.classList.toggle('active', viewToShow === pomodoroView);
-    navBlocker.classList.toggle('active', viewToShow === blockerView);
+    navSitesList.classList.toggle('active', viewToShow === sitesListView);
   }
 
   navPomodoro.addEventListener('click', () => showView(pomodoroView));
-  navBlocker.addEventListener('click', () => showView(blockerView));
-  
+  navWebsiteBlock.addEventListener('click', () => toggleWebsiteBlockList());
+
+  navSitesList.addEventListener('click', () => {
+    toggleWebsiteBlockList(true);
+    showView(sitesListView);
+  });
+
+  navTimeSchedule.addEventListener('click', () => {
+    // showView(timeScheduleView);
+  });
+
+  navHabitTracker.addEventListener('click', () => {
+    // showView(habitTrackerView);
+  });
+
   // Show Pomodoro view by default
   showView(pomodoroView);
+  toggleWebsiteBlockList(false);
 
 
   // --- Pomodoro Logic (largely unchanged) ---
-  const timerEl = $("timer"), modeEl = $("mode"), startBtn = $("startPause");
-  const longBreakToggle = $("enableLongBreak"), longBreakSettings = $("longBreakSettings");
+  const timerEl = $('timer'), modeEl = $('mode'), startBtn = $('startPause');
+  const longBreakToggle = $('enableLongBreak'), longBreakSettings = $('longBreakSettings');
 
   function updateLongBreakUI() {
     const on = longBreakToggle.checked;
-    longBreakSettings.style.display = on ? "" : "none";
-    longBreakSettings.querySelectorAll("input").forEach(el => (el.disabled = !on));
+    longBreakSettings.style.display = on ? '' : 'none';
+    longBreakSettings.querySelectorAll('input').forEach(el => (el.disabled = !on));
   }
-  longBreakToggle.addEventListener("change", updateLongBreakUI);
+  longBreakToggle.addEventListener('change', updateLongBreakUI);
 
   // Live updates from service worker
-  chrome.runtime.sendMessage({ cmd: "getState" }, refresh);
+  chrome.runtime.sendMessage({ cmd: 'getState' }, refresh);
   chrome.runtime.onMessage.addListener(msg => {
-    if (msg.cmd === "tick") refresh(msg.state);
-    if (msg.cmd === "playSoundPopup") playLocal(msg.sound);
+    if (msg.cmd === 'tick') refresh(msg.state);
+    if (msg.cmd === 'playSoundPopup') playLocal(msg.sound);
   });
 
   // Controls
-  startBtn.addEventListener("click", () => chrome.runtime.sendMessage({ cmd: "toggle" }));
-  $("reset").addEventListener("click", () => chrome.runtime.sendMessage({ cmd: "reset" }));
+  startBtn.addEventListener('click', () => chrome.runtime.sendMessage({ cmd: 'toggle' }));
+  $('reset').addEventListener('click', () => chrome.runtime.sendMessage({ cmd: 'reset' }));
 
   // Settings Load
-  chrome.storage.local.get(["settings"], ({ settings }) => {
+  chrome.storage.local.get(['settings'], ({ settings }) => {
     if (settings) {
-      $("workMinutes").value = settings.work;
-      $("breakMinutes").value = settings.break;
-      $("cycles").value = settings.cycles;
+      $('workMinutes').value = settings.work;
+      $('breakMinutes').value = settings.break;
+      $('cycles').value = settings.cycles;
       longBreakToggle.checked = settings.enableLongBreak ?? false;
-      $("longBreak").value = settings.longBreak ?? 15;
-      $("longBreakEvery").value = settings.longBreakEvery ?? 4;
+      $('longBreak').value = settings.longBreak ?? 15;
+      $('longBreakEvery').value = settings.longBreakEvery ?? 4;
     } else {
       longBreakToggle.checked = false;
     }
@@ -87,23 +120,23 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Save Settings
-  $("saveSettings").addEventListener("click", () => {
+  $('saveSettings').addEventListener('click', () => {
     const settings = {
-      work: +$("workMinutes").value,
-      break: +$("breakMinutes").value,
-      cycles: +$("cycles").value,
+      work: +$('workMinutes').value,
+      break: +$('breakMinutes').value,
+      cycles: +$('cycles').value,
       enableLongBreak: longBreakToggle.checked,
-      longBreak: +$("longBreak").value,
-      longBreakEvery: +$("longBreakEvery").value
+      longBreak: +$('longBreak').value,
+      longBreakEvery: +$('longBreakEvery').value
     };
     chrome.storage.local.set({ settings }, () => {
-      chrome.runtime.sendMessage({ cmd: "settingsUpdated" });
-      alert("Saved! New values apply on next reset/start.");
+      chrome.runtime.sendMessage({ cmd: 'settingsUpdated' });
+      alert('Saved! New values apply on next reset/start.');
     });
   });
 
   // Test Sound
-  $("testSound").addEventListener("click", () => playLocal("work"));
+  $('testSound').addEventListener('click', () => playLocal('work'));
   function playLocal(sound) {
     new Audio(chrome.runtime.getURL(`sounds/${sound}.mp3`)).play().catch(console.warn);
   }
@@ -111,11 +144,11 @@ document.addEventListener('DOMContentLoaded', () => {
   // Refresh UI
   function refresh(s) {
     if (!s) return;
-    const m = String(s.minutes).padStart(2, "0"), sec = String(s.seconds).padStart(2, "0");
+    const m = String(s.minutes).padStart(2, '0'), sec = String(s.seconds).padStart(2, '0');
     timerEl.textContent = `${m}:${sec}`;
-    const label = s.mode === "longBreak" ? "Long Break" : s.mode.charAt(0).toUpperCase() + s.mode.slice(1);
+    const label = s.mode === 'longBreak' ? 'Long Break' : s.mode.charAt(0).toUpperCase() + s.mode.slice(1);
     modeEl.textContent = `${label} (${s.cycle + 1}/${s.totalCycles})`;
-    startBtn.textContent = s.running ? "Pause" : (s.paused ? "Resume" : "Start");
+    startBtn.textContent = s.running ? 'Pause' : (s.paused ? 'Resume' : 'Start');
   }
 
 
@@ -144,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
   async function renderBlockedSites() {
     const data = await chrome.storage.local.get(['userBlockedSites', 'defaultSites']);
     let userBlockedSites = Array.isArray(data.userBlockedSites) ? data.userBlockedSites : [];
-    let storedDefaults   = Array.isArray(data.defaultSites) ? data.defaultSites : defaultSites;
+    let storedDefaults = Array.isArray(data.defaultSites) ? data.defaultSites : defaultSites;
 
     if (!data.defaultSites) {
       await chrome.storage.local.set({ defaultSites: storedDefaults });
