@@ -19,8 +19,20 @@
       <button id="nav-pomodoro" class="nav-button text-left w-full p-2 rounded-md font-semibold transition-colors">
 		Pomodoro
       </button>
-      <button id="nav-blocker" class="nav-button text-left w-full p-2 rounded-md font-semibold mt-2 transition-colors">
-		Website Block
+      <button id="nav-website-block" class="nav-button list-button text-left w-full p-2 rounded-md font-semibold mt-2 transition-colors" aria-expanded="false">
+        <span>Website Block</span>
+        <span class="list-button-arrow" aria-hidden="true"></span>
+      </button>
+      <div id="website-block-list" class="subnav-list hidden mt-1 space-y-1">
+        <button id="nav-sites-list" class="subnav-button text-left w-full p-2 rounded-md font-semibold transition-colors">
+          Sites List
+        </button>
+        <button id="nav-time-schedule" class="subnav-button text-left w-full p-2 rounded-md font-semibold transition-colors">
+          Time Schedule
+        </button>
+      </div>
+      <button id="nav-habit-tracker" class="nav-button text-left w-full p-2 rounded-md font-semibold mt-2 transition-colors">
+		Habit Tracker
       </button>
     </nav>
 
@@ -54,8 +66,8 @@
       </div>
 
       <!-- Website Blocker View -->
-      <div id="blocker-view" class="view hidden">
-        <h2 class="text-2xl font-bold text-slate-700 mb-4">Website Blocker</h2>
+      <div id="sites-list-view" class="view hidden">
+        <h2 class="text-2xl font-bold text-slate-700 mb-4">Sites List</h2>
         <div class="mb-4">
           <p class="text-sm text-slate-500 mb-2">Add a domain to block (e.g., "example.com").</p>
           <p class="blocker-note mb-2">The list below starts with a few default sites. Remove any you don't need.<button id="dismiss-note" class="note-dismiss" aria-label="Dismiss">&times;</button></p>

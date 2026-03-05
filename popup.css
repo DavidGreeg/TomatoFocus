@@ -98,3 +98,42 @@ body {
  * .remove-site-button
  * .nav-button
  */
+
+.list-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-button-arrow {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(-135deg);
+  transition: transform 0.15s ease;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.list-button.expanded .list-button-arrow {
+  transform: rotate(45deg);
+}
+
+.subnav-list {
+  margin-left: 0.5rem;
+}
+
+.subnav-button {
+  background-color: rgba(255, 255, 255, 0.09);
+  font-size: 0.875rem;
+}
+
+.subnav-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.subnav-button.active {
+  background-color: var(--color-tomato-midl, #b84c4c);
+  color: white;
+}
