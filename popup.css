@@ -52,7 +52,6 @@ body {
   /* padding-bottom:0.05rem; */
 }
 
-
 .blocked-regex-item{
   padding-top:0.4rem;
   padding-bottom:0.4rem;
@@ -83,8 +82,8 @@ body {
 }
 
 .logoimg{
-    width: 80px;
-	height: 80px;
+ /*    width: 80px; */
+	/* height: 80px; */
     border-radius: 50%;
 }
 
