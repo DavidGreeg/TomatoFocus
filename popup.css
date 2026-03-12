@@ -99,6 +99,14 @@ body {
   flex-basis: 8.5rem;
 }
 
+#site-input-row #input-mode-toggle,
+#site-input-row #add-site-button {
+  width: 6rem;
+  min-width: 6rem;
+  max-width: 6rem;
+  flex: 0 0 6rem;
+}
+
 #toggle-regex-button {
   min-height: 2.5rem;
 }
