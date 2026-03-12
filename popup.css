@@ -90,6 +90,22 @@ body {
   font-family: var(--font-mono);
 }
 
+
+#site-input-row #new-site-input {
+  min-width: 0;
+}
+
+#site-input-row.regex-mode #new-site-input {
+  flex-basis: 8.5rem;
+}
+
+#toggle-regex-button {
+  min-height: 2.5rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .logoimg{
  /*    width: 80px; */
 	/* height: 80px; */

@@ -180,6 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const addSiteButton = $('add-site-button');
   const inputModeToggle = $('input-mode-toggle');
   const toggleRegexButton = $('toggle-regex-button');
+  const siteInputRow = $('site-input-row');
   let regexMode = false;
   let regexInputTarget = 'name';
   let pendingRegexEntry = { name: '', regex: '' };
@@ -191,11 +192,13 @@ document.addEventListener('DOMContentLoaded', () => {
       toggleRegexButton.classList.add('hidden');
       toggleRegexButton.textContent = 'regex';
       newSiteInput.classList.remove('regex-input');
+      siteInputRow.classList.remove('regex-mode');
       newSiteInput.placeholder = 'e.g., distracting.com';
       return;
     }
 
     toggleRegexButton.classList.remove('hidden');
+    siteInputRow.classList.add('regex-mode');
     const editingRegex = regexInputTarget === 'regex';
     toggleRegexButton.textContent = editingRegex ? 'name' : 'regex';
     newSiteInput.classList.toggle('regex-input', editingRegex);
