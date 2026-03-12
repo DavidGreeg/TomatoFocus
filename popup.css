@@ -84,6 +84,12 @@ body {
   background-color:#cbd5e1
 }
 
+
+.regex-input {
+  background-color: #f7f7cf;
+  font-family: var(--font-mono);
+}
+
 .logoimg{
  /*    width: 80px; */
 	/* height: 80px; */

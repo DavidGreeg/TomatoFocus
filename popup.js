@@ -179,9 +179,31 @@ document.addEventListener('DOMContentLoaded', () => {
   const newSiteInput = $('new-site-input');
   const addSiteButton = $('add-site-button');
   const inputModeToggle = $('input-mode-toggle');
+  const toggleRegexButton = $('toggle-regex-button');
   let regexMode = false;
+  let regexInputTarget = 'name';
+  let pendingRegexEntry = { name: '', regex: '' };
   inputModeToggle.dataset.tip = 'web\ndomain';
   inputModeToggle.classList.add('narrow-font');
+
+  function syncRegexInputState() {
+    if (!regexMode) {
+      toggleRegexButton.classList.add('hidden');
+      toggleRegexButton.textContent = 'regex';
+      newSiteInput.classList.remove('regex-input');
+      newSiteInput.placeholder = 'e.g., distracting.com';
+      return;
+    }
+
+    toggleRegexButton.classList.remove('hidden');
+    const editingRegex = regexInputTarget === 'regex';
+    toggleRegexButton.textContent = editingRegex ? 'name' : 'regex';
+    newSiteInput.classList.toggle('regex-input', editingRegex);
+    newSiteInput.placeholder = editingRegex
+      ? '^https?:\\/\\/.*zombie.*'
+      : 'e.g., Zombie Sites';
+    newSiteInput.value = editingRegex ? pendingRegexEntry.regex : pendingRegexEntry.name;
+  }
 
   const note = document.querySelector('.blocker-note');
   const dismissBtn = document.getElementById('dismiss-note');
@@ -206,6 +228,25 @@ document.addEventListener('DOMContentLoaded', () => {
     inputModeToggle.textContent = regexMode ? '(.*)' : 'WWW';
     inputModeToggle.dataset.tip = regexMode ? 'regular\nexpression' : 'web\ndomain';
     inputModeToggle.classList.toggle('narrow-font', !regexMode);
+
+    if (regexMode) {
+      pendingRegexEntry = { name: '', regex: '' };
+      regexInputTarget = 'name';
+    } else {
+      pendingRegexEntry = { name: '', regex: '' };
+    }
+
+    newSiteInput.value = '';
+    syncRegexInputState();
+  });
+
+  toggleRegexButton.addEventListener('click', () => {
+    if (!regexMode) return;
+
+    pendingRegexEntry[regexInputTarget] = newSiteInput.value.trim();
+    regexInputTarget = regexInputTarget === 'name' ? 'regex' : 'name';
+    syncRegexInputState();
+    newSiteInput.focus();
   });
   const blockedSitesList = $('blocked-sites-list');
 
@@ -295,7 +336,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let newEntry;
     if (regexMode) {
-      newEntry = { name: newSite, regex: newSite };
+      pendingRegexEntry[regexInputTarget] = newSite;
+      const name = pendingRegexEntry.name.trim();
+      const regex = pendingRegexEntry.regex.trim();
+      if (!name || !regex) {
+        syncRegexInputState();
+        return;
+      }
+      newEntry = { name, regex };
     } else {
       let domain = newSite;
       try {
@@ -311,9 +359,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const newBlockedSites = [...userBlockedSites, newEntry];
       await chrome.storage.local.set({ userBlockedSites: newBlockedSites });
       newSiteInput.value = '';
+      pendingRegexEntry = { name: '', regex: '' };
+      regexInputTarget = 'name';
+      syncRegexInputState();
       renderBlockedSites();
     }
   });
+
+  syncRegexInputState();
 
   // Initial render when popup is opened
   renderBlockedSites();
