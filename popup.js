@@ -268,18 +268,18 @@ document.addEventListener('DOMContentLoaded', () => {
       const actions = document.createElement('div');
       actions.className = 'flex items-center space-x-1';
       if (typeof site !== 'string') {
-        const toggleBtn = document.createElement('button');
-        toggleBtn.textContent = 'regex';
-        toggleBtn.className = 'toggle-regex-button';
-        toggleBtn.addEventListener('click', () => {
+        const toggleRegexButton = document.createElement('button');
+        toggleRegexButton.textContent = 'regex';
+        toggleRegexButton.className = 'toggle-regex-button';
+        toggleRegexButton.addEventListener('click', () => {
           const showingName = siteName.textContent === site.name;
           siteName.textContent = showingName ? site.regex : site.name;
           siteName.classList.toggle('regex-text', showingName);
           siteName.classList.toggle('slim-scrollbar', showingName);
           listItem.classList.toggle('blocked-regex-item', showingName);
-          toggleBtn.textContent = showingName ? 'name' : 'regex';
+          toggleRegexButton.textContent = showingName ? 'name' : 'regex';
         });
-        actions.appendChild(toggleBtn);
+        actions.appendChild(toggleRegexButton);
       }
       actions.appendChild(removeButton);
       listItem.appendChild(actions);
