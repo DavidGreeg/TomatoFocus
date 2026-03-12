@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setListButtonExpanded(navWebsiteBlock, shouldExpand);
   }
 
+  function setWebsiteSubnavActive(activeButton) {
+    [navSitesList, navTimeSchedule].forEach(button => {
+      button.classList.toggle('active', button === activeButton);
+    });
+    const hasActiveSubnav = [navSitesList, navTimeSchedule].some(button => button.classList.contains('active'));
+    navWebsiteBlock.disabled = hasActiveSubnav;
+    navWebsiteBlock.classList.toggle('locked', hasActiveSubnav);
+    navWebsiteBlock.setAttribute('aria-disabled', String(hasActiveSubnav));
+  }
+
   function showView(viewToShow) {
     views.forEach(view => {
       view.classList.add('hidden');
@@ -61,15 +71,23 @@ document.addEventListener('DOMContentLoaded', () => {
     navSitesList.classList.toggle('active', viewToShow === sitesListView);
   }
 
-  navPomodoro.addEventListener('click', () => showView(pomodoroView));
-  navWebsiteBlock.addEventListener('click', () => toggleWebsiteBlockList());
+  navPomodoro.addEventListener('click', () => {
+    showView(pomodoroView);
+    setWebsiteSubnavActive(null);
+  });
+  navWebsiteBlock.addEventListener('click', () => {
+    if (navWebsiteBlock.disabled) return;
+    toggleWebsiteBlockList();
+  });
 
   navSitesList.addEventListener('click', () => {
     toggleWebsiteBlockList(true);
     showView(sitesListView);
+    setWebsiteSubnavActive(navSitesList);
   });
 
   navTimeSchedule.addEventListener('click', () => {
+    setWebsiteSubnavActive(navTimeSchedule);
     // showView(timeScheduleView);
   });
 
@@ -79,6 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Show Pomodoro view by default
   showView(pomodoroView);
+  setWebsiteSubnavActive(null);
   toggleWebsiteBlockList(false);
 
 
@@ -131,11 +150,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     chrome.storage.local.set({ settings }, () => {
       chrome.runtime.sendMessage({ cmd: 'settingsUpdated' });
-      alert('Saved! New values apply on next reset/start.');
+      window.close();
     });
   });
 
-  // Test Sound
+  // Intended for future usage when the control is visible again.
   $('testSound').addEventListener('click', () => playLocal('work'));
   function playLocal(sound) {
     new Audio(chrome.runtime.getURL(`sounds/${sound}.mp3`)).play().catch(console.warn);
