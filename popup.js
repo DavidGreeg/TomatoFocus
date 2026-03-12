@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
   navPomodoro.addEventListener('click', () => {
     showView(pomodoroView);
     setWebsiteSubnavActive(null);
+    toggleWebsiteBlockList(false);
   });
   navWebsiteBlock.addEventListener('click', () => {
     if (navWebsiteBlock.disabled) return;
@@ -92,6 +93,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   navHabitTracker.addEventListener('click', () => {
+    setWebsiteSubnavActive(null);
+    toggleWebsiteBlockList(false);
     // showView(habitTrackerView);
   });
 
@@ -104,6 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // --- Pomodoro Logic (largely unchanged) ---
   const timerEl = $('timer'), modeEl = $('mode'), startBtn = $('startPause');
   const longBreakToggle = $('enableLongBreak'), longBreakSettings = $('longBreakSettings');
+  const settingsDetails = document.querySelector('.settings-details');
 
   function updateLongBreakUI() {
     const on = longBreakToggle.checked;
@@ -150,7 +154,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     chrome.storage.local.set({ settings }, () => {
       chrome.runtime.sendMessage({ cmd: 'settingsUpdated' });
-      window.close();
+      if (settingsDetails) settingsDetails.open = false;
     });
   });
 
@@ -181,9 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const note = document.querySelector('.blocker-note');
   const dismissBtn = document.getElementById('dismiss-note');
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', () => note?.remove());
+
+  async function setupBlockerNote() {
+    if (!note) return;
+
+    const { blockerNoteShownThisSession = false } = await chrome.storage.session.get('blockerNoteShownThisSession');
+    if (blockerNoteShownThisSession) {
+      note.remove();
+      return;
+    }
+
+    await chrome.storage.session.set({ blockerNoteShownThisSession: true });
+    dismissBtn?.addEventListener('click', () => note.remove());
   }
+
+  setupBlockerNote();
 
   inputModeToggle.addEventListener('click', () => {
     regexMode = !regexMode;
