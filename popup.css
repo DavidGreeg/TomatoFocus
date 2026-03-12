@@ -112,6 +112,14 @@ body {
   transform: rotate(45deg) scaleY(1);
 }
 
+
+.list-button.locked,
+.list-button:disabled {
+  cursor: default;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
 .subnav-list {
   margin-left: 0.5rem;
 }

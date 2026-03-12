@@ -51,6 +51,16 @@ document.addEventListener('DOMContentLoaded', () => {
     setListButtonExpanded(navWebsiteBlock, shouldExpand);
   }
 
+  function setWebsiteSubnavActive(activeButton) {
+    [navSitesList, navTimeSchedule].forEach(button => {
+      button.classList.toggle('active', button === activeButton);
+    });
+    const hasActiveSubnav = [navSitesList, navTimeSchedule].some(button => button.classList.contains('active'));
+    navWebsiteBlock.disabled = hasActiveSubnav;
+    navWebsiteBlock.classList.toggle('locked', hasActiveSubnav);
+    navWebsiteBlock.setAttribute('aria-disabled', String(hasActiveSubnav));
+  }
+
   function showView(viewToShow) {
     views.forEach(view => {
       view.classList.add('hidden');
@@ -61,30 +71,43 @@ document.addEventListener('DOMContentLoaded', () => {
     navSitesList.classList.toggle('active', viewToShow === sitesListView);
   }
 
-  navPomodoro.addEventListener('click', () => showView(pomodoroView));
-  navWebsiteBlock.addEventListener('click', () => toggleWebsiteBlockList());
+  navPomodoro.addEventListener('click', () => {
+    showView(pomodoroView);
+    setWebsiteSubnavActive(null);
+    toggleWebsiteBlockList(false);
+  });
+  navWebsiteBlock.addEventListener('click', () => {
+    if (navWebsiteBlock.disabled) return;
+    toggleWebsiteBlockList();
+  });
 
   navSitesList.addEventListener('click', () => {
     toggleWebsiteBlockList(true);
     showView(sitesListView);
+    setWebsiteSubnavActive(navSitesList);
   });
 
   navTimeSchedule.addEventListener('click', () => {
+    setWebsiteSubnavActive(navTimeSchedule);
     // showView(timeScheduleView);
   });
 
   navHabitTracker.addEventListener('click', () => {
+    setWebsiteSubnavActive(null);
+    toggleWebsiteBlockList(false);
     // showView(habitTrackerView);
   });
 
   // Show Pomodoro view by default
   showView(pomodoroView);
+  setWebsiteSubnavActive(null);
   toggleWebsiteBlockList(false);
 
 
   // --- Pomodoro Logic (largely unchanged) ---
   const timerEl = $('timer'), modeEl = $('mode'), startBtn = $('startPause');
   const longBreakToggle = $('enableLongBreak'), longBreakSettings = $('longBreakSettings');
+  const settingsDetails = document.querySelector('.settings-details');
 
   function updateLongBreakUI() {
     const on = longBreakToggle.checked;
@@ -131,11 +154,11 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     chrome.storage.local.set({ settings }, () => {
       chrome.runtime.sendMessage({ cmd: 'settingsUpdated' });
-      alert('Saved! New values apply on next reset/start.');
+      if (settingsDetails) settingsDetails.open = false;
     });
   });
 
-  // Test Sound
+  // Intended for future usage when the control is visible again.
   $('testSound').addEventListener('click', () => playLocal('work'));
   function playLocal(sound) {
     new Audio(chrome.runtime.getURL(`sounds/${sound}.mp3`)).play().catch(console.warn);
@@ -162,9 +185,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const note = document.querySelector('.blocker-note');
   const dismissBtn = document.getElementById('dismiss-note');
-  if (dismissBtn) {
-    dismissBtn.addEventListener('click', () => note?.remove());
+
+  async function setupBlockerNote() {
+    if (!note) return;
+
+    const { blockerNoteShownThisSession = false } = await chrome.storage.session.get('blockerNoteShownThisSession');
+    if (blockerNoteShownThisSession) {
+      note.remove();
+      return;
+    }
+
+    await chrome.storage.session.set({ blockerNoteShownThisSession: true });
+    dismissBtn?.addEventListener('click', () => note.remove());
   }
+
+  setupBlockerNote();
 
   inputModeToggle.addEventListener('click', () => {
     regexMode = !regexMode;
