@@ -101,14 +101,18 @@ body {
 
 #site-input-row #input-mode-toggle,
 #site-input-row #add-site-button {
-  width: 6rem;
-  min-width: 6rem;
-  max-width: 6rem;
-  flex: 0 0 6rem;
+  width: 2.5rem;
+  min-width: 2.5rem;
+  max-width: 2.5rem;
+  flex: 0 0 2.5rem;
 }
 
 #toggle-regex-button {
-  min-height: 2.5rem;
+  background-color: #cdf9f9;
+  font-weight:550;
+  min-height: 1.75rem;
+  width: 2.5rem;
+  min-width: 2.5rem;
 }
 
 #site-input-row #toggle-regex-button:not(.hidden) {

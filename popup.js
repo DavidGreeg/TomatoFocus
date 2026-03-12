@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
   function syncRegexInputState() {
     if (!regexMode) {
       toggleRegexButton.classList.add('hidden');
-      toggleRegexButton.textContent = 'regex';
+      toggleRegexButton.textContent = 'name';
       newSiteInput.classList.remove('regex-input');
       siteInputRow.classList.remove('regex-mode');
       newSiteInput.placeholder = 'e.g., distracting.com';
@@ -200,7 +200,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleRegexButton.classList.remove('hidden');
     siteInputRow.classList.add('regex-mode');
     const editingRegex = regexInputTarget === 'regex';
-    toggleRegexButton.textContent = editingRegex ? 'name' : 'regex';
+    toggleRegexButton.textContent = editingRegex ? 'regex' : 'name';
     newSiteInput.classList.toggle('regex-input', editingRegex);
     newSiteInput.placeholder = editingRegex
       ? '^https?:\\/\\/.*zombie.*'
@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', () => {
       actions.className = 'flex items-center space-x-1';
       if (typeof site !== 'string') {
         const toggleRegexButton = document.createElement('button');
-        toggleRegexButton.textContent = 'regex';
+        toggleRegexButton.textContent = 'name';
         toggleRegexButton.className = 'toggle-regex-button';
         toggleRegexButton.addEventListener('click', () => {
           const showingName = siteName.textContent === site.name;
@@ -321,7 +321,7 @@ document.addEventListener('DOMContentLoaded', () => {
           siteName.classList.toggle('regex-text', showingName);
           siteName.classList.toggle('slim-scrollbar', showingName);
           listItem.classList.toggle('blocked-regex-item', showingName);
-          toggleRegexButton.textContent = showingName ? 'name' : 'regex';
+          toggleRegexButton.textContent = showingName ? 'regex' : 'name';
         });
         actions.appendChild(toggleRegexButton);
       }
