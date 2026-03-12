@@ -101,6 +101,9 @@ body {
 
 #toggle-regex-button {
   min-height: 2.5rem;
+}
+
+#site-input-row #toggle-regex-button:not(.hidden) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
