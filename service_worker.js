@@ -30,10 +30,14 @@ async function init() {
   await installBlockerRules();
 
   chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'local' && (changes.userBlockedSites || changes.defaultSites)) {
+    if (area === 'local' && (changes.userBlockedSites || changes.defaultSites || changes.timeIntervals)) {
       installBlockerRules();
     }
   });
+
+  setInterval(() => {
+    installBlockerRules();
+  }, 60000);
 
   // start timer loop
   tick();
@@ -190,6 +194,10 @@ chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
       play(msg.sound);
       break;
     }
+    case "timeIntervalsUpdated": {
+      installBlockerRules();
+      break;
+    }
   }
 });
 
@@ -201,7 +209,33 @@ function notify(title, message) {
 /* ------------------------
  *    WEBSITE BLOCKER
  * ------------------------ */
+
+function toCurrentMinutes() {
+  const now = new Date();
+  return now.getHours() * 60 + now.getMinutes();
+}
+
+async function shouldBlockNow() {
+  const { timeIntervals = [] } = await chrome.storage.local.get('timeIntervals');
+  if (!Array.isArray(timeIntervals) || timeIntervals.length === 0) return false;
+  const now = toCurrentMinutes();
+  return timeIntervals.some(interval => {
+    if (typeof interval?.start !== 'number' || typeof interval?.end !== 'number') return false;
+    return now >= interval.start && now <= interval.end;
+  });
+}
+
 async function installBlockerRules () {
+  const isWithinSchedule = await shouldBlockNow();
+  if (!isWithinSchedule) {
+    const allRules = await chrome.declarativeNetRequest.getDynamicRules();
+    if (allRules.length) {
+      await chrome.declarativeNetRequest.updateDynamicRules({ removeRuleIds: allRules.map(rule => rule.id), addRules: [] });
+    }
+    console.log('[Blocker] outside schedule, rules removed');
+    return;
+  }
+
   const { userBlockedSites = [], defaultSites = [] } = await chrome.storage.local.get(['userBlockedSites','defaultSites']);
   const combinedSites = Array.isArray(defaultSites) ? [...defaultSites] : [];
   for (const site of userBlockedSites) {

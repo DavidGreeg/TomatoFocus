@@ -383,3 +383,28 @@ body {
     background-color: var(--color-tomato-dark);
   }
 }
+
+.settings-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: "DejaVu Sans Mono", monospace;
+  font-weight: 700;
+  border-radius: 0;
+  background-color: #000;
+  color: #fff;
+  border: 1px solid #000;
+}
+
+.settings-nav-button:hover {
+  background-color: #1f2937;
+}
+
+.settings-nav-button.active {
+  background-color: #ad0d18;
+}
+
+.settings-nav-icon {
+  width: 1rem;
+  height: 1rem;
+}

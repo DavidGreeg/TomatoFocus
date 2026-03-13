@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', () => {
     'twitter.com',
     'instagram.com',
     'youtube.com',
-    { name: 'zombs games', regex: '^https?:\\/\\/([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
+    { name: 'zombs games', regex: '^https?:\/\/([a-z0-9-]+\.)*zomb[^./]*\.io($|/)' },
     'slither.io',
     'agar.io',
     'colonist.io',
@@ -25,10 +25,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const navSitesList = $('nav-sites-list');
   const navTimeSchedule = $('nav-time-schedule');
   const navHabitTracker = $('nav-habit-tracker');
+  const navSettings = $('nav-settings');
+  const settingsNavIcon = $('settings-nav-icon');
 
   const pomodoroView = $('pomodoro-view');
   const sitesListView = $('sites-list-view');
-  const views = [pomodoroView, sitesListView];
+  const timeScheduleView = $('time-schedule-view');
+  const settingsView = $('settings-view');
+  const views = [pomodoroView, sitesListView, timeScheduleView, settingsView];
 
   function setListButtonExpanded(button, isExpanded) {
     button.classList.toggle('expanded', isExpanded);
@@ -62,6 +66,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     navPomodoro.classList.toggle('active', viewToShow === pomodoroView);
     navSitesList.classList.toggle('active', viewToShow === sitesListView);
+    navTimeSchedule.classList.toggle('active', viewToShow === timeScheduleView);
+    const settingsActive = viewToShow === settingsView;
+    navSettings.classList.toggle('active', settingsActive);
+    settingsNavIcon.src = settingsActive ? 'icons/settings-icon_white.svg' : 'icons/settings-icon.svg';
   }
 
   navPomodoro.addEventListener('click', () => {
@@ -81,14 +89,20 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   navTimeSchedule.addEventListener('click', () => {
+    toggleWebsiteBlockList(true);
+    showView(timeScheduleView);
     setWebsiteSubnavActive(navTimeSchedule);
-    // showView(timeScheduleView);
   });
 
   navHabitTracker.addEventListener('click', () => {
     setWebsiteSubnavActive(null);
     toggleWebsiteBlockList(false);
-    // showView(habitTrackerView);
+  });
+
+  navSettings.addEventListener('click', () => {
+    setWebsiteSubnavActive(null);
+    toggleWebsiteBlockList(false);
+    showView(settingsView);
   });
 
   // Show Pomodoro view by default
@@ -362,8 +376,161 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // --- Time schedule logic ---
+  const scheduleNote = $('schedule-note');
+  const dismissScheduleNoteBtn = $('dismiss-schedule-note');
+  const timeAInput = $('time-a-input');
+  const timeBInput = $('time-b-input');
+  const addTimeIntervalBtn = $('add-time-interval');
+  const timeIntervalError = $('time-interval-error');
+  const timeIntervalList = $('time-interval-list');
+
+  async function setupScheduleNote() {
+    if (!scheduleNote) return;
+
+    const { scheduleNoteShownThisSession = false } = await chrome.storage.session.get('scheduleNoteShownThisSession');
+    if (scheduleNoteShownThisSession) {
+      scheduleNote.remove();
+      return;
+    }
+
+    await chrome.storage.session.set({ scheduleNoteShownThisSession: true });
+    dismissScheduleNoteBtn?.addEventListener('click', () => scheduleNote.remove());
+  }
+
+  function parseMinutes(timeStr) {
+    if (!timeStr || !timeStr.includes(':')) return null;
+    const [h, m] = timeStr.split(':').map(Number);
+    return h * 60 + m;
+  }
+
+  function showScheduleError(message) {
+    timeIntervalError.textContent = message;
+    timeIntervalError.classList.remove('hidden');
+  }
+
+  function clearScheduleError() {
+    timeIntervalError.textContent = '';
+    timeIntervalError.classList.add('hidden');
+  }
+
+  function intervalsOverlap(aStart, aEnd, bStart, bEnd) {
+    return aStart < bEnd && bStart < aEnd;
+  }
+
+  function toLabel(minutes) {
+    const h = String(Math.floor(minutes / 60)).padStart(2, '0');
+    const m = String(minutes % 60).padStart(2, '0');
+    return `${h}:${m}`;
+  }
+
+  async function renderIntervals() {
+    const { timeIntervals = [] } = await chrome.storage.local.get('timeIntervals');
+    timeIntervalList.innerHTML = '';
+
+    if (!timeIntervals.length) {
+      timeIntervalList.innerHTML = '<p class="text-slate-500 text-center">No intervals yet.</p>';
+      return;
+    }
+
+    timeIntervals.forEach((interval, index) => {
+      const item = document.createElement('li');
+      item.className = 'blocked-site-item';
+
+      const text = document.createElement('span');
+      text.textContent = `${toLabel(interval.start)} - ${toLabel(interval.end)}`;
+
+      const remove = document.createElement('button');
+      remove.textContent = '✖';
+      remove.className = 'remove-site-button';
+      remove.addEventListener('click', async () => {
+        const { timeIntervals = [] } = await chrome.storage.local.get('timeIntervals');
+        timeIntervals.splice(index, 1);
+        await chrome.storage.local.set({ timeIntervals });
+        chrome.runtime.sendMessage({ cmd: 'timeIntervalsUpdated' });
+        renderIntervals();
+      });
+
+      item.appendChild(text);
+      item.appendChild(remove);
+      timeIntervalList.appendChild(item);
+    });
+  }
+
+  addTimeIntervalBtn.addEventListener('click', async () => {
+    clearScheduleError();
+    const timeA = parseMinutes(timeAInput.value);
+    const timeB = parseMinutes(timeBInput.value);
+
+    if (timeA === null || timeB === null) {
+      showScheduleError('Please select both times.');
+      return;
+    }
+
+    if (timeB > timeA) {
+      showScheduleError('Time B cannot be later than Time A.');
+      return;
+    }
+
+    const newInterval = { start: timeB, end: timeA };
+    const { timeIntervals = [] } = await chrome.storage.local.get('timeIntervals');
+    const hasOverlap = timeIntervals.some(interval =>
+      intervalsOverlap(newInterval.start, newInterval.end, interval.start, interval.end)
+    );
+
+    if (hasOverlap) {
+      showScheduleError('This interval overlaps with an existing interval.');
+      return;
+    }
+
+    const updated = [...timeIntervals, newInterval].sort((a, b) => a.start - b.start);
+    await chrome.storage.local.set({ timeIntervals: updated });
+    chrome.runtime.sendMessage({ cmd: 'timeIntervalsUpdated' });
+    timeAInput.value = '';
+    timeBInput.value = '';
+    renderIntervals();
+  });
+
+  // --- Settings page logic ---
+  const enableUserPasswordCheckbox = $('enable-user-password');
+  const passwordSettings = $('password-settings');
+  const userPasswordInput = $('user-password-input');
+  const savePasswordButton = $('save-password');
+
+  async function syncPasswordSettingsUI() {
+    const { userPasswordEnabled = false } = await chrome.storage.local.get('userPasswordEnabled');
+    enableUserPasswordCheckbox.checked = userPasswordEnabled;
+    passwordSettings.classList.toggle('hidden', !userPasswordEnabled);
+  }
+
+  enableUserPasswordCheckbox.addEventListener('change', async (event) => {
+    const checked = event.target.checked;
+    const { userPassword = '' } = await chrome.storage.local.get('userPassword');
+
+    if (!checked && userPassword) {
+      const input = window.prompt('Enter current password to disable password protection:');
+      if (input !== userPassword) {
+        enableUserPasswordCheckbox.checked = true;
+        return;
+      }
+    }
+
+    await chrome.storage.local.set({ userPasswordEnabled: checked });
+    passwordSettings.classList.toggle('hidden', !checked);
+  });
+
+  savePasswordButton.addEventListener('click', async () => {
+    const password = userPasswordInput.value;
+    if (!password) return;
+    await chrome.storage.local.set({ userPassword: password, userPasswordEnabled: true });
+    userPasswordInput.value = '';
+  });
+
   syncRegexInputState();
+  setupScheduleNote();
+  syncPasswordSettingsUI();
 
   // Initial render when popup is opened
   renderBlockedSites();
+  renderIntervals();
 });
