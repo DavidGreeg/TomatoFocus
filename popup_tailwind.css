@@ -38,6 +38,9 @@
     --color-gray-300: oklch(87.2% 0.01 258.338);
     --color-white: #fff;
     --spacing: 0.25rem;
+    --text-2xs: 0.5rem;
+    --text-2xs--line-height: calc(0.66 / 0.5);
+    --text-2sm: 0.66rem;
     --text-xs: 0.75rem;
     --text-xs--line-height: calc(1 / 0.75);
     --text-sm: 0.875rem;
@@ -396,6 +399,14 @@
   .text-sm {
     font-size: var(--text-sm);
     line-height: var(--tw-leading, var(--text-sm--line-height));
+  }
+  .text-xs {
+    font-size: var(--text-xs);
+    line-height: var(--tw-leading, var(--text-xs--line-height));
+  }
+  .text-2xs {
+    font-size: var(--text-2xs);
+    line-height: var(--tw-leading, var(--text-2xs--line-height));
   }
   .font-bold {
     --tw-font-weight: var(--font-weight-bold);

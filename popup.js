@@ -5,18 +5,11 @@ document.addEventListener('DOMContentLoaded', () => {
     'twitter.com',
     'instagram.com',
     'youtube.com',
-    'duolingo.com',
-    'deeeep.io',
-    'diep.io',
-    'deepl.com',
-    { name: 'diep games', regex: '^https?:\\/\\/([a-z0-9-]+\\.)*diep\\.io($|/)' },
     { name: 'zombs games', regex: '^https?:\\/\\/([a-z0-9-]+\\.)*zomb[^./]*\\.io($|/)' },
     'slither.io',
     'agar.io',
     'colonist.io',
     'nitrotype.com',
-    'wco.tv',
-    'catflix.su'
   ];
 
   chrome.storage.local.get(['defaultSites'], ({ defaultSites: stored }) => {
@@ -203,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toggleRegexButton.textContent = editingRegex ? 'regex' : 'name';
     newSiteInput.classList.toggle('regex-input', editingRegex);
     newSiteInput.placeholder = editingRegex
-      ? '^https?:\\/\\/.*zombie.*'
+      ? '^www\\..*zombie.*'
       : 'e.g., Zombie Sites';
     newSiteInput.value = editingRegex ? pendingRegexEntry.regex : pendingRegexEntry.name;
   }
