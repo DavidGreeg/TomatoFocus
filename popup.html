@@ -72,7 +72,12 @@
 
       <!-- Website Blocker View -->
       <div id="sites-list-view" class="view hidden">
-        <h2 class="text-2xl font-bold text-slate-700 mb-4">Sites List</h2>
+        <div class="view-header-row mb-4">
+          <h2 class="text-2xl font-bold text-slate-700">Sites List</h2>
+          <button id="sites-list-lock-toggle" class="content-lock-button" type="button" aria-label="Toggle site list lock">
+            <img src="icons/lock-icon.svg" alt="Locked" class="content-lock-icon">
+          </button>
+        </div>
         <div class="mb-4">
           <p class="text-sm text-slate-500 mb-2"></p>
 		  <p class="blocker-note mb-2">The list below starts with a few default sites. Remove any you don't need.<button id="dismiss-note" class="note-dismiss" aria-label="Dismiss">&times;</button></p>
@@ -93,10 +98,15 @@
 
       <!-- Time Schedule View -->
       <div id="time-schedule-view" class="view hidden">
-        <h2 class="text-2xl font-bold text-slate-700 mb-4">Time Schedule</h2>
+        <div class="view-header-row mb-4">
+          <h2 class="text-2xl font-bold text-slate-700">Time Schedule</h2>
+          <button id="time-schedule-lock-toggle" class="content-lock-button" type="button" aria-label="Toggle time schedule lock">
+            <img src="icons/lock-icon.svg" alt="Locked" class="content-lock-icon">
+          </button>
+        </div>
         <p id="schedule-note" class="blocker-note mb-2">Here you should add the time intervals when websites should be blocked.<button id="dismiss-schedule-note" class="note-dismiss" aria-label="Dismiss">&times;</button></p>
         <div id="time-interval-error" class="hidden p-2 mb-2 rounded-md bg-red-100 text-red-700 text-sm"></div>
-        <div class="schedule-input-row mb-3">
+        <div id="schedule-input-row" class="schedule-input-row mb-3">
           <label class="text-sm text-slate-600">From:
             <input id="time-a-input" type="time" step="600" class="w-full p-2 border rounded-md mt-1">
           </label>
