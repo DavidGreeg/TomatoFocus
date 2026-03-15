@@ -493,37 +493,108 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // --- Settings page logic ---
   const enableUserPasswordCheckbox = $('enable-user-password');
+  const passwordHelp = $('password-help');
   const passwordSettings = $('password-settings');
   const userPasswordInput = $('user-password-input');
+  const showUserPasswordCheckbox = $('show-user-password');
   const savePasswordButton = $('save-password');
+  const validPassConditions = 'Use 4-24 characters and include at least one letter and one number.';
+
+  function isValidPassword(password) {
+    if (password.length < 4 || password.length > 24) return false;
+    const hasLetter = /[a-z]/i.test(password);
+    const hasDigit = /\d/.test(password);
+    return hasLetter && hasDigit;
+  }
+
+  function resetPasswordUIToDefaultState() {
+    passwordSettings.classList.add('hidden');
+    passwordSettings.classList.remove('password-settings-disabled');
+    passwordHelp.classList.add('hidden');
+    showUserPasswordCheckbox.checked = false;
+    userPasswordInput.type = 'password';
+    userPasswordInput.value = '';
+    enableUserPasswordCheckbox.checked = false;
+  }
+
+  function setPasswordInputsLocked(locked) {
+    passwordSettings.classList.toggle('password-settings-disabled', locked);
+    userPasswordInput.disabled = locked;
+    showUserPasswordCheckbox.disabled = locked;
+    savePasswordButton.disabled = locked;
+  }
 
   async function syncPasswordSettingsUI() {
-    const { userPasswordEnabled = false } = await chrome.storage.local.get('userPasswordEnabled');
+    const { userPasswordEnabled = false, userPassword = '' } = await chrome.storage.local.get(['userPasswordEnabled', 'userPassword']);
+    const hasSavedPassword = Boolean(userPasswordEnabled && userPassword);
+
     enableUserPasswordCheckbox.checked = userPasswordEnabled;
     passwordSettings.classList.toggle('hidden', !userPasswordEnabled);
+    passwordHelp.classList.toggle('hidden', !userPasswordEnabled);
+    passwordHelp.dataset.tip = validPassConditions;
+
+    userPasswordInput.value = '';
+    showUserPasswordCheckbox.checked = false;
+    userPasswordInput.type = 'password';
+    setPasswordInputsLocked(hasSavedPassword);
+
+    if (userPasswordEnabled && !userPassword) {
+      await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
+      resetPasswordUIToDefaultState();
+    }
   }
 
   enableUserPasswordCheckbox.addEventListener('change', async (event) => {
     const checked = event.target.checked;
     const { userPassword = '' } = await chrome.storage.local.get('userPassword');
 
-    if (!checked && userPassword) {
-      const input = window.prompt('Enter current password to disable password protection:');
-      if (input !== userPassword) {
-        enableUserPasswordCheckbox.checked = true;
+    if (!checked) {
+      const inputActive = !passwordSettings.classList.contains('hidden') && !userPasswordInput.disabled;
+      const typedPassword = userPasswordInput.value.trim();
+
+      if (inputActive && !typedPassword) {
+        await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
+        resetPasswordUIToDefaultState();
         return;
       }
+
+      if (userPassword) {
+        const input = window.prompt('Enter current password to disable password protection:');
+        if (input !== userPassword) {
+          enableUserPasswordCheckbox.checked = true;
+          return;
+        }
+      }
+
+      await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
+      resetPasswordUIToDefaultState();
+      return;
     }
 
-    await chrome.storage.local.set({ userPasswordEnabled: checked });
-    passwordSettings.classList.toggle('hidden', !checked);
+    await chrome.storage.local.set({ userPasswordEnabled: true, userPassword: '' });
+    passwordSettings.classList.remove('hidden');
+    passwordHelp.classList.remove('hidden');
+    setPasswordInputsLocked(false);
+    userPasswordInput.value = '';
+    showUserPasswordCheckbox.checked = false;
+    userPasswordInput.type = 'password';
+  });
+
+  showUserPasswordCheckbox.addEventListener('change', () => {
+    userPasswordInput.type = showUserPasswordCheckbox.checked ? 'text' : 'password';
   });
 
   savePasswordButton.addEventListener('click', async () => {
-    const password = userPasswordInput.value;
-    if (!password) return;
+    const password = userPasswordInput.value.trim();
+    if (!password || !isValidPassword(password)) {
+      window.alert(`Invalid password. ${validPassConditions}`);
+      return;
+    }
+
     await chrome.storage.local.set({ userPassword: password, userPasswordEnabled: true });
-    userPasswordInput.value = '';
+    setPasswordInputsLocked(true);
+    userPasswordInput.type = 'password';
+    showUserPasswordCheckbox.checked = false;
   });
 
   syncRegexInputState();
