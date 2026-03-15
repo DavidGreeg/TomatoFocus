@@ -460,6 +460,10 @@ body {
   gap: 0.5rem;
 }
 
+.schedule-input-row.hidden {
+  display: none;
+}
+
 .schedule-input-row > label,
 .schedule-input-row > button {
   flex: 1 1 0;
@@ -490,8 +494,8 @@ body {
 
 .content-lock-button {
   position: relative;
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   padding: 0;
   border: none;
   background: transparent;
@@ -500,8 +504,8 @@ body {
 }
 
 .content-lock-icon {
-  width: 0.75rem;
-  height: 0.75rem;
+  width: 1.5rem;
+  height: 1.5rem;
   display: block;
 }
 
