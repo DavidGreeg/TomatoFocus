@@ -517,6 +517,11 @@ document.addEventListener('DOMContentLoaded', () => {
     enableUserPasswordCheckbox.checked = false;
   }
 
+  function applySavedPasswordMask(password) {
+    userPasswordInput.type = 'text';
+    userPasswordInput.value = '●'.repeat(password.length);
+  }
+
   function setPasswordInputsLocked(locked) {
     passwordSettings.classList.toggle('password-settings-disabled', locked);
     userPasswordInput.disabled = locked;
@@ -530,12 +535,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     enableUserPasswordCheckbox.checked = userPasswordEnabled;
     passwordSettings.classList.toggle('hidden', !userPasswordEnabled);
-    passwordHelp.classList.toggle('hidden', !userPasswordEnabled);
+    passwordHelp.classList.toggle('hidden', !hasSavedPassword);
     passwordHelp.dataset.tip = validPassConditions;
 
-    userPasswordInput.value = '';
     showUserPasswordCheckbox.checked = false;
-    userPasswordInput.type = 'password';
+    if (hasSavedPassword) {
+      applySavedPasswordMask(userPassword);
+    } else {
+      userPasswordInput.value = '';
+      userPasswordInput.type = 'password';
+    }
     setPasswordInputsLocked(hasSavedPassword);
 
     if (userPasswordEnabled && !userPassword) {
@@ -573,7 +582,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     await chrome.storage.local.set({ userPasswordEnabled: true, userPassword: '' });
     passwordSettings.classList.remove('hidden');
-    passwordHelp.classList.remove('hidden');
+    passwordHelp.classList.add('hidden');
     setPasswordInputsLocked(false);
     userPasswordInput.value = '';
     showUserPasswordCheckbox.checked = false;
@@ -592,9 +601,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     await chrome.storage.local.set({ userPassword: password, userPasswordEnabled: true });
+    passwordHelp.classList.remove('hidden');
     setPasswordInputsLocked(true);
-    userPasswordInput.type = 'password';
     showUserPasswordCheckbox.checked = false;
+    applySavedPasswordMask(password);
   });
 
   syncRegexInputState();

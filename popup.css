@@ -432,19 +432,20 @@ body {
 .password-help:focus-visible::after {
   content: attr(data-tip);
   position: absolute;
-  left: 120%;
-  top: 50%;
-  transform: translateY(-50%);
+  right: 0;
+  bottom: 100%;
+  transform: translateY(-0.4rem);
   background-color: #1e293b;
   color: #fff;
   font-family: var(--datatip-font);
   font-size: 0.7rem;
   border-radius: 0.25rem;
   padding: 0.35rem 0.45rem;
-  min-width: 12rem;
   line-height: 1.25;
   z-index: 50;
   white-space: normal;
+  width: 11rem;
+  max-width: 11rem;
 }
 
 .password-settings-disabled {
@@ -452,8 +453,32 @@ body {
   pointer-events: none;
 }
 
+#time-schedule-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  align-items: flex-end;
+}
+
+#time-schedule-controls > label,
+#time-schedule-controls > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+#time-schedule-controls > label > input,
 #add-time-interval {
   width: 100%;
   max-width: none;
+}
+
+#password-actions-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+#password-actions-row #save-password {
+  margin-left: auto;
 }
 
