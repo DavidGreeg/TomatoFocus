@@ -198,8 +198,8 @@ body {
     line-height: var(--tw-leading, var(--text-sm--line-height));
     color: var(--color-slate-600);
   }
-  .setting-input {
-    width: calc(var(--spacing) * 16);
+  .password-input {
+    width: calc(var(--spacing) * 48);
     border-radius: var(--radius-md);
     border-style: var(--tw-border-style);
     border-width: 1px;
@@ -432,7 +432,7 @@ body {
 .password-help:focus-visible::after {
   content: attr(data-tip);
   position: absolute;
-  right: 0;
+  left: -3.5rem;
   bottom: calc(100% + 0.35rem);
   background-color: #1e293b;
   color: #fff;
@@ -468,6 +468,7 @@ body {
 .schedule-input-row > button {
   width: auto;
   max-width: none;
+  margin-bottom: 2.5px;
 }
 
 .password-actions-row {
