@@ -460,6 +460,10 @@ body {
   gap: 0.5rem;
 }
 
+.schedule-input-row.hidden {
+  display: none;
+}
+
 .schedule-input-row > label,
 .schedule-input-row > button {
   flex: 1 1 0;
@@ -479,4 +483,60 @@ body {
 
 .password-actions-row #save-password {
   margin-left: auto;
+}
+
+
+.view-header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.content-lock-button {
+  position: relative;
+  width: 1.5rem;
+  height: 1.5rem;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+
+.content-lock-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+}
+
+.content-lock-button.content-lock-button-inactive {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.content-lock-button[data-tip]:not([data-tip='']).content-lock-button-inactive:hover::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  right: 0;
+  background-color: #1e293b;
+  color: #fff;
+  font-family: var(--datatip-font);
+  font-size: 0.65rem;
+  border-radius: 0.25rem;
+  padding: 0.25rem 0.35rem;
+  width: max-content;
+  max-width: 11rem;
+  line-height: 1.25;
+  z-index: 50;
+  white-space: nowrap;
+}
+
+.content-item-locked span {
+  opacity: 0.5;
+}
+
+.content-action-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

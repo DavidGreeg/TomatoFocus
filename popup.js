@@ -187,7 +187,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const addSiteButton = $('add-site-button');
   const inputModeToggle = $('input-mode-toggle');
   const toggleRegexButton = $('toggle-regex-button');
-  const siteInputRow = $('site-input-row');
   let regexMode = false;
   let regexInputTarget = 'name';
   let pendingRegexEntry = { name: '', regex: '' };
@@ -336,6 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
       listItem.appendChild(actions);
       blockedSitesList.appendChild(listItem);
     });
+
+    updateListActionInteractivity();
   }
 
   addSiteButton.addEventListener('click', async () => {
@@ -384,6 +385,82 @@ document.addEventListener('DOMContentLoaded', () => {
   const addTimeIntervalBtn = $('add-time-interval');
   const timeIntervalError = $('time-interval-error');
   const timeIntervalList = $('time-interval-list');
+  const siteInputRow = $('site-input-row');
+  const scheduleInputRow = $('schedule-input-row');
+  const sitesListLockToggle = $('sites-list-lock-toggle');
+  const timeScheduleLockToggle = $('time-schedule-lock-toggle');
+
+  let contentLocked = false;
+  let hasActivePassword = false;
+
+
+  function updateListActionInteractivity() {
+    const items = document.querySelectorAll('#blocked-sites-list .blocked-site-item, #time-interval-list .blocked-site-item');
+    items.forEach(item => item.classList.toggle('content-item-locked', hasActivePassword && contentLocked));
+
+    const removeButtons = document.querySelectorAll('#blocked-sites-list .remove-site-button, #time-interval-list .remove-site-button');
+    removeButtons.forEach(button => {
+      button.disabled = hasActivePassword && contentLocked;
+      button.classList.toggle('content-action-disabled', hasActivePassword && contentLocked);
+    });
+  }
+
+  function syncContentLockUI() {
+    const lockButtons = [sitesListLockToggle, timeScheduleLockToggle];
+    const lockIconPath = contentLocked ? 'icons/lock-icon.svg' : 'icons/unlock-icon.svg';
+    const lockAlt = contentLocked ? 'Locked' : 'Unlocked';
+
+    lockButtons.forEach(button => {
+      if (!button) return;
+      const icon = button.querySelector('img');
+      if (icon) {
+        icon.src = lockIconPath;
+        icon.alt = lockAlt;
+      }
+
+      button.classList.toggle('content-lock-button-inactive', !hasActivePassword);
+      button.setAttribute('aria-disabled', String(!hasActivePassword));
+      button.dataset.tip = hasActivePassword ? '' : 'unavailable: no password provided';
+    });
+
+    siteInputRow?.classList.toggle('hidden', hasActivePassword && contentLocked);
+    scheduleInputRow?.classList.toggle('hidden', hasActivePassword && contentLocked);
+
+    updateListActionInteractivity();
+  }
+
+  async function refreshContentLockAvailability() {
+    const { userPasswordEnabled = false, userPassword = '' } = await chrome.storage.local.get(['userPasswordEnabled', 'userPassword']);
+    hasActivePassword = Boolean(userPasswordEnabled && userPassword);
+
+    if (!hasActivePassword) {
+      contentLocked = false;
+    }
+
+    syncContentLockUI();
+  }
+
+  async function handleContentLockToggle() {
+    if (!hasActivePassword) return;
+
+    if (contentLocked) {
+      const { userPassword = '' } = await chrome.storage.local.get('userPassword');
+      const typed = window.prompt('Enter password to unlock:');
+      if (typed !== userPassword) {
+        window.alert('Incorrect password.');
+        return;
+      }
+      contentLocked = false;
+      syncContentLockUI();
+      return;
+    }
+
+    contentLocked = true;
+    syncContentLockUI();
+  }
+
+  sitesListLockToggle?.addEventListener('click', handleContentLockToggle);
+  timeScheduleLockToggle?.addEventListener('click', handleContentLockToggle);
 
   async function setupScheduleNote() {
     if (!scheduleNote) return;
@@ -430,6 +507,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!timeIntervals.length) {
       timeIntervalList.innerHTML = '<p class="text-slate-500 text-center">No intervals yet.</p>';
+      updateListActionInteractivity();
       return;
     }
 
@@ -455,6 +533,8 @@ document.addEventListener('DOMContentLoaded', () => {
       item.appendChild(remove);
       timeIntervalList.appendChild(item);
     });
+
+    updateListActionInteractivity();
   }
 
   addTimeIntervalBtn.addEventListener('click', async () => {
@@ -553,6 +633,9 @@ document.addEventListener('DOMContentLoaded', () => {
       await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
       resetPasswordUIToDefaultState();
     }
+
+    contentLocked = hasSavedPassword;
+    await refreshContentLockAvailability();
   }
 
   enableUserPasswordCheckbox.addEventListener('change', async (event) => {
@@ -566,6 +649,8 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputActive && !typedPassword) {
         await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
         resetPasswordUIToDefaultState();
+        contentLocked = false;
+        await refreshContentLockAvailability();
         return;
       }
 
@@ -579,10 +664,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
       await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
       resetPasswordUIToDefaultState();
+      contentLocked = false;
+      await refreshContentLockAvailability();
       return;
     }
 
     await chrome.storage.local.set({ userPasswordEnabled: true, userPassword: '' });
+    contentLocked = false;
+    await refreshContentLockAvailability();
     passwordSettings.classList.remove('hidden');
     passwordHelp.classList.add('hidden');
     showUserPasswordCheckbox.checked = false;
@@ -603,6 +692,15 @@ document.addEventListener('DOMContentLoaded', () => {
     await chrome.storage.local.set({ userPassword: password, userPasswordEnabled: true });
     passwordHelp.classList.remove('hidden');
     setPasswordInputsLocked(true, password.length);
+    contentLocked = true;
+    await refreshContentLockAvailability();
+  });
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible' && !contentLocked) {
+      contentLocked = true;
+      syncContentLockUI();
+    }
   });
 
   syncRegexInputState();
@@ -612,4 +710,5 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initial render when popup is opened
   renderBlockedSites();
   renderIntervals();
+  refreshContentLockAvailability();
 });
