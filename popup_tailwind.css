@@ -265,6 +265,15 @@
   .w-full {
     width: 100%;
   }
+  .w-half{
+    width: 50%;
+  }
+  .w-third{
+    width: 33%;
+  }
+  .w-quarter{
+    width: 25%;
+  }
   .flex-grow {
     flex-grow: 1;
   }

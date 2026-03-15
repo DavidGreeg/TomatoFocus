@@ -43,6 +43,10 @@ body {
   height: 0.25rem;
 }
 
+.firstLabel{
+  margin-right=200px;
+}
+
 .regex-text{
   color:#76570a;
   font-size:0.75rem;
@@ -365,8 +369,8 @@ body {
 
   .add-site-button {
     /* desired width in rem units */
-    width: 6rem;
-	max-width: 6rem;
+    width: 3rem;
+	max-width: 3rem;
 
     /* original Tailwind styles */
     /* background-color: #2563eb;  */
@@ -382,4 +386,32 @@ body {
   .add-site-button:hover {
     background-color: var(--color-tomato-dark);
   }
+}
+
+.settings-nav-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-family: "DejaVu Sans Mono", monospace;
+  font-weight: 700;
+  border-radius: 0;
+  /* background-color: #4f0f07; */
+  background-color: #3c0c0c;
+  color: #fff;
+  border: none;
+  margin-top: auto;
+}
+
+.settings-nav-button:hover {
+  /* background-color: #4c0c0c; */
+  background-color: #5d0e0e;
+}
+
+.settings-nav-button.active {
+  background-color: #ad0d18;
+}
+
+.settings-nav-icon {
+  width: 1rem;
+  height: 1rem;
 }

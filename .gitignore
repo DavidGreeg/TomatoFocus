@@ -12,3 +12,5 @@ done-list*
 # resources
 package-lock.json
 node_modules/
+feature.patch
+
