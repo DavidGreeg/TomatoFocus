@@ -6,7 +6,7 @@ backup*/
 icons/
 sounds/
 # files
-tailwind*.css
+tailwind_*.css
 todo-list*
 done-list*
 # resources
