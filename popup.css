@@ -167,6 +167,75 @@ body {
   margin-left: 0.5rem;
 }
 
+
+.view-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.view-lock-button {
+  width: 0.75rem;
+  height: 0.75rem;
+  min-width: 0.75rem;
+  min-height: 0.75rem;
+  border: none;
+  background-color: transparent;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  margin-top: 0.2rem;
+  position: relative;
+}
+
+.view-lock-button[data-lock-state="locked"] {
+  background-image: url("icons/lock-icon.svg");
+}
+
+.view-lock-button[data-lock-state="unlocked"] {
+  background-image: url("icons/unlock-icon.svg");
+}
+
+.view-lock-button[data-password-active="false"] {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.view-lock-button[data-password-active="true"] {
+  cursor: pointer;
+}
+
+.view-lock-button[data-password-active="false"]:hover::after,
+.view-lock-button[data-password-active="false"]:focus-visible::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.35rem);
+  transform: translateX(-50%);
+  background-color: #1e293b;
+  color: #fff;
+  font-family: var(--datatip-font);
+  font-size: 0.65rem;
+  border-radius: 0.25rem;
+  padding: 0.2rem 0.35rem;
+  white-space: nowrap;
+  z-index: 60;
+}
+
+.locked-input-row {
+  display: none !important;
+}
+
+.locked-list-item {
+  opacity: 0.5;
+}
+
+.locked-list-item .remove-site-button {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
 /* ---- Tailwind @layer components moved here from popup_tailwind.css ---- */
 @layer components {
   .control-button {

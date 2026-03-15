@@ -188,6 +188,10 @@ document.addEventListener('DOMContentLoaded', () => {
   const inputModeToggle = $('input-mode-toggle');
   const toggleRegexButton = $('toggle-regex-button');
   const siteInputRow = $('site-input-row');
+  const siteListLockButton = $('site-list-lock-button');
+  const timeScheduleLockButton = $('time-schedule-lock-button');
+  let blockerViewsUnlocked = false;
+  let hasActivePassword = false;
   let regexMode = false;
   let regexInputTarget = 'name';
   let pendingRegexEntry = { name: '', regex: '' };
@@ -213,6 +217,50 @@ document.addEventListener('DOMContentLoaded', () => {
       ? '^www\\..*zombie.*'
       : 'e.g., Zombie Sites';
     newSiteInput.value = editingRegex ? pendingRegexEntry.regex : pendingRegexEntry.name;
+  }
+
+
+  function setLockStateForUI() {
+    const lockState = hasActivePassword && !blockerViewsUnlocked ? 'locked' : 'unlocked';
+    [siteListLockButton, timeScheduleLockButton].forEach(button => {
+      button.dataset.passwordActive = String(hasActivePassword);
+      button.dataset.lockState = lockState;
+      button.dataset.tip = hasActivePassword ? '' : 'unavailable: no password provided';
+      button.setAttribute('aria-disabled', String(!hasActivePassword));
+      button.disabled = false;
+    });
+
+    siteInputRow.classList.toggle('locked-input-row', hasActivePassword && !blockerViewsUnlocked);
+    const scheduleInputRow = document.querySelector('.schedule-input-row');
+    scheduleInputRow?.classList.toggle('locked-input-row', hasActivePassword && !blockerViewsUnlocked);
+
+    document.querySelectorAll('#blocked-sites-list .blocked-site-item, #time-interval-list .blocked-site-item').forEach(item => {
+      item.classList.toggle('locked-list-item', hasActivePassword && !blockerViewsUnlocked);
+    });
+  }
+
+  async function unlockBlockerViews() {
+    const { userPassword = '' } = await chrome.storage.local.get('userPassword');
+    const input = window.prompt('Enter password to unlock editing:');
+    if (input !== userPassword) {
+      window.alert('Incorrect password.');
+      return;
+    }
+
+    blockerViewsUnlocked = true;
+    setLockStateForUI();
+  }
+
+  async function handleLockToggle() {
+    if (!hasActivePassword) return;
+
+    if (blockerViewsUnlocked) {
+      blockerViewsUnlocked = false;
+      setLockStateForUI();
+      return;
+    }
+
+    await unlockBlockerViews();
   }
 
   const note = document.querySelector('.blocker-note');
@@ -336,6 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
       listItem.appendChild(actions);
       blockedSitesList.appendChild(listItem);
     });
+
+    setLockStateForUI();
   }
 
   addSiteButton.addEventListener('click', async () => {
@@ -430,6 +480,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!timeIntervals.length) {
       timeIntervalList.innerHTML = '<p class="text-slate-500 text-center">No intervals yet.</p>';
+      setLockStateForUI();
       return;
     }
 
@@ -455,6 +506,8 @@ document.addEventListener('DOMContentLoaded', () => {
       item.appendChild(remove);
       timeIntervalList.appendChild(item);
     });
+
+    setLockStateForUI();
   }
 
   addTimeIntervalBtn.addEventListener('click', async () => {
@@ -552,7 +605,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (userPasswordEnabled && !userPassword) {
       await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
       resetPasswordUIToDefaultState();
+      hasActivePassword = false;
+      blockerViewsUnlocked = false;
+      setLockStateForUI();
+      return;
     }
+
+    hasActivePassword = hasSavedPassword;
+    blockerViewsUnlocked = false;
+    setLockStateForUI();
   }
 
   enableUserPasswordCheckbox.addEventListener('change', async (event) => {
@@ -566,6 +627,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if (inputActive && !typedPassword) {
         await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
         resetPasswordUIToDefaultState();
+        hasActivePassword = false;
+        blockerViewsUnlocked = false;
+        setLockStateForUI();
         return;
       }
 
@@ -579,6 +643,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
       await chrome.storage.local.set({ userPasswordEnabled: false, userPassword: '' });
       resetPasswordUIToDefaultState();
+      hasActivePassword = false;
+      blockerViewsUnlocked = false;
+      setLockStateForUI();
       return;
     }
 
@@ -603,6 +670,26 @@ document.addEventListener('DOMContentLoaded', () => {
     await chrome.storage.local.set({ userPassword: password, userPasswordEnabled: true });
     passwordHelp.classList.remove('hidden');
     setPasswordInputsLocked(true, password.length);
+    hasActivePassword = true;
+    blockerViewsUnlocked = false;
+    setLockStateForUI();
+  });
+
+  siteListLockButton.addEventListener('click', handleLockToggle);
+  timeScheduleLockButton.addEventListener('click', handleLockToggle);
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden' && blockerViewsUnlocked) {
+      blockerViewsUnlocked = false;
+      setLockStateForUI();
+    }
+  });
+
+  window.addEventListener('blur', () => {
+    if (blockerViewsUnlocked) {
+      blockerViewsUnlocked = false;
+      setLockStateForUI();
+    }
   });
 
   syncRegexInputState();
