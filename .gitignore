@@ -4,6 +4,7 @@
 backup*/
 # image and audio files
 icons/
+media/
 sounds/
 # files
 tailwind_*.css
