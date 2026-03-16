@@ -3,8 +3,11 @@
   --bg-start: #4b1e14;
   --bg-end: #37120c;
   --accent: #ff5630;
+  --accent-mid: #ff6a4d;
+  --accent-soft: #ff9e84;
   --text: #f5f5f5;
   --muted: #d6d6d6;
+  --chip: rgba(255, 106, 77, 0.2);
 }
 
 * {
@@ -33,6 +36,19 @@ body {
   padding: 1.5rem;
 }
 
+.tag {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.22em;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--chip);
+  color: var(--accent-soft);
+  margin-bottom: 0.85rem;
+}
+
 .card {
   width: min(680px, 100%);
   text-align: center;
@@ -55,15 +71,16 @@ body {
 
 h1 {
   margin: 0 0 0.75rem;
-  font-size: clamp(1.8rem, 4.4vw, 3rem);
-  line-height: 1.12;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  line-height: 1.15;
 }
 
 p {
-  margin: 0 auto 1.4rem;
-  max-width: 40ch;
+  margin: 0 auto;
+  max-width: 52ch;
   color: var(--muted);
   line-height: 1.6;
+  font-size: clamp(0.95rem, 2.5vw, 1.1rem);
 }
 
 
