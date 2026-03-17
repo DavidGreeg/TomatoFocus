@@ -6,58 +6,58 @@ It is built with Manifest V3 and keeps timer + blocker logic in a background ser
 
 ---
 
-## Current functionality
+## ✨ Current functionality
 
-### Pomodoro timer
+### ⏱️ Pomodoro timer
 - **Custom durations** for work minutes, short break minutes, and cycle count.
 - **Optional long breaks** with configurable duration and frequency (e.g., every 4 work blocks).
-- **Start / Pause / Resume / Reset** controls.
+- **Start / Pause / Resume / Reset** controls ▶️⏸️🔁
 - **Accurate remaining time while paused** (resume continues from exact remaining time).
-- **Session completion behavior**: after the configured number of work blocks, the timer stops and resets.
-- **Desktop notifications** at key transitions (break start, work resume, completed session).
-- **Persistent state** using `chrome.storage.local`, so timer state survives popup close/reopen.
+- **Session completion behavior**: after the configured number of work blocks, the timer stops and resets ✅
+- **Desktop notifications** at key transitions (break start, work resume, completed session) 🔔
+- **Persistent state** using `chrome.storage.local`, so timer state survives popup close/reopen 💾
 
-### Sound system
+### 🔊 Sound system
 - Uses an **offscreen document** for reliable background audio playback.
 - Supports these sound events:
-  - `start` (session starts)
-  - `work` (work block starts)
-  - `break` (short break starts)
-  - `finish` (session finished)
+  - `start` (session starts) 🚀
+  - `work` (work block starts) 🧠
+  - `break` (short break starts) ☕
+  - `finish` (session finished) 🏁
   - sequential playback is supported (used for long-break cue sequence).
 - If offscreen playback is unavailable, popup playback fallback is used.
 
-### Website blocker
+### 🚫 Website blocker
 - **Active (implemented)** schedule-based blocking via `declarativeNetRequest` dynamic rules.
 - Blocks both:
-  - **domain entries** (e.g., `youtube.com`)
-  - **regex entries** (named rules with custom regex patterns)
+  - **domain entries** (e.g., `youtube.com`) 🌐
+  - **regex entries** (named rules with custom regex patterns) `.*`
 - Includes a **default site list** on first run and supports adding/removing entries.
-- During active schedule windows, blocked URLs are **redirected to `redirect-page.html`**.
+- During active schedule windows, blocked URLs are **redirected to `redirect-page.html`** ↪️
 - Outside schedule windows, blocker rules are removed automatically.
 - Dynamic rules are refreshed when sites/schedules change and periodically to stay in sync.
 
-### Block schedule
+### 🗓️ Block schedule
 - Create one or more blocking intervals in **HH:MM → HH:MM** format.
 - Intervals are validated to prevent invalid values and overlaps.
 - Current default interval is initialized on first run (`00:00–04:00`) if none exists.
 
-### Content lock + password protection
+### 🔐 Content lock + password protection
 - Optional **user password** can be enabled in Settings.
 - Password validation rules: **4–24 chars**, includes at least **one letter** and **one number**.
 - When enabled, site-list and schedule editing can be content-locked.
 - Unlocking requires password verification.
 
-### Popup navigation/UI
+### 🧭 Popup navigation/UI
 - Left-nav popup with sections for:
-  - Pomodoro
-  - Website Block → Sites List / Time Schedule
-  - Settings
-- Habit Tracker button exists in navigation UI, but no tracker functionality is wired yet.
+  - Pomodoro ⏱️
+  - Website Block → Sites List / Time Schedule 🚫
+  - Settings ⚙️
+- Habit Tracker button exists in navigation UI, but no tracker functionality is wired yet 🛠️
 
 ---
 
-## Installation (development)
+## 🧩 Installation (development)
 
 1. Clone this repository.
 2. Open Chrome and go to `chrome://extensions`.
@@ -66,7 +66,7 @@ It is built with Manifest V3 and keeps timer + blocker logic in a background ser
 
 ---
 
-## Usage
+## 🚀 Usage
 
 1. Open the extension popup.
 2. In **Pomodoro**, set timer values and save settings.
@@ -77,7 +77,7 @@ It is built with Manifest V3 and keeps timer + blocker logic in a background ser
 
 ---
 
-## Project structure
+## 🗂️ Project structure
 
 - `manifest.json` – MV3 permissions, popup, background, host permissions.
 - `service_worker.js` – timer engine, notifications, blocker rule installation, schedule checks.
@@ -87,7 +87,7 @@ It is built with Manifest V3 and keeps timer + blocker logic in a background ser
 
 ---
 
-## Notes
+## 📝 Notes
 
 - The extension requests broad host access (`<all_urls>`) to support user-defined website blocking.
 - `practice/tooltips.html` is an isolated practice/demo file and not part of runtime extension behavior.
