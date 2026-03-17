@@ -1,80 +1,93 @@
-# TomatoFocus – Pomodoro Timer Extension
+# TomatoFocus – Chrome Pomodoro + Website Blocker
 
-A minimal, customisable **Pomodoro timer** for Google Chrome with desktop notifications and sound alarms. It helps you stay focused by timing work/break cycles — and a built‑in website blocker is on the roadmap.
+TomatoFocus is a Chrome extension that combines a Pomodoro timer with a schedule-based website blocker.
 
-> **Status:** Basic features complete – work/break cycles, optional long breaks and per‑session sounds. Roadmap includes optional site‑blocking.
-
----
-
-## Features
-
-| Feature                     | Description                                                                       |
-| --------------------------- | --------------------------------------------------------------------------------- |
-| ⏱ Custom cycles             | Set *work minutes*, *break minutes*, and *number of cycles* directly in the popup |
-| 🔔 Sound alarms             | Plays `start`, `work`, `break`, and `finish` MP3 alerts (replaceable)             |
-| 💾 Persistent state         | Timer keeps running even if you close the popup or browser windows                |
-| 🔋 Pause/Resume             | Freezes the countdown and resumes later — timer display stays correct             |
-| 📢 Desktop notifications    | Toast messages at every transition                                                |
-| 🪄 Long break             | Configurable long break after *N* cycles                                          |
-| 🚫 **Planned**: website blocker | Block distracting sites while the work timer is active                            |
+It is built with Manifest V3 and keeps timer + blocker logic in a background service worker so sessions keep working when the popup is closed.
 
 ---
 
-## Installation (dev mode)
+## ✨ Current functionality
 
-1. **Clone** or download this repo.
-2. Chrome → `chrome://extensions` → toggle **Developer mode**.
-3. Click **Load unpacked** → select the `TomatoFocus/` folder.
-4. Pin the tomato icon (optional).
+### ⏱️ Pomodoro timer
+- **Custom durations** for work minutes, short break minutes, and cycle count.
+- **Optional long breaks** with configurable duration and frequency (e.g., every 4 work blocks).
+- **Start / Pause / Resume / Reset** controls ▶️⏸️🔁
+- **Accurate remaining time while paused** (resume continues from exact remaining time).
+- **Session completion behavior**: after the configured number of work blocks, the timer stops and resets ✅
+- **Desktop notifications** at key transitions (break start, work resume, completed session) 🔔
+- **Persistent state** using `chrome.storage.local`, so timer state survives popup close/reopen 💾
 
-> **Sound files:** Drop your own 128‑kbps MP3s into `sounds/` named `start.mp3`, `work.mp3`, `break.mp3`, `finish.mp3` (or keep the defaults).
+### 🔊 Sound system
+- Uses an **offscreen document** for reliable background audio playback.
+- Supports these sound events:
+  - `start` (session starts) 🚀
+  - `work` (work block starts) 🧠
+  - `break` (short break starts) ☕
+  - `finish` (session finished) 🏁
+  - sequential playback is supported (used for long-break cue sequence).
+- If offscreen playback is unavailable, popup playback fallback is used.
 
----
+### 🚫 Website blocker
+- **Active (implemented)** schedule-based blocking via `declarativeNetRequest` dynamic rules.
+- Blocks both:
+  - **domain entries** (e.g., `youtube.com`) 🌐
+  - **regex entries** (named rules with custom regex patterns) `.*`
+- Includes a **default site list** on first run and supports adding/removing entries.
+- During active schedule windows, blocked URLs are **redirected to `redirect-page.html`** ↪️
+- Outside schedule windows, blocker rules are removed automatically.
+- Dynamic rules are refreshed when sites/schedules change and periodically to stay in sync.
 
-## Usage
+### 🗓️ Block schedule
+- Create one or more blocking intervals in **HH:MM → HH:MM** format.
+- Intervals are validated to prevent invalid values and overlaps.
+- Current default interval is initialized on first run (`00:00–04:00`) if none exists.
 
-1. Click the extension icon.
-2. Open **⚙ Settings**.
-3. Enter *Work (min)*, *Break (min)*, *Cycles*, and optional *Long break* settings.
-4. Hit **Save** → **Test sound** once to unlock autoplay.
-5. Press **Start**.
+### 🔐 Content lock + password protection
+- Optional **user password** can be enabled in Settings.
+- Password validation rules: **4–24 chars**, includes at least **one letter** and **one number**.
+- When enabled, site-list and schedule editing can be content-locked.
+- Unlocking requires password verification.
 
-Button states:
-
-| Button     | Meaning                          |
-| ---------- | -------------------------------- |
-| **Start**  | Begin a fresh session            |
-| **Pause**  | Freeze current timer             |
-| **Resume** | Continue a paused session        |
-| **Reset**  | Stop everything & reset counters |
-
----
-
-## Development
-
-```bash
-# one‑time setup
-git clone https://github.com/<your‑user>/TomatoFocus.git
-cd TomatoFocus
-
-# after changes
-npm run lint   # coming soon – ESLint/Prettier setup
-# reload via chrome://extensions
-```
-
-### Key files
-
-| File                      | Purpose                                                  |
-| ------------------------- | -------------------------------------------------------- |
-| `manifest.json`           | Manifest V3 definition                                   |
-| `service_worker.js`       | Background timer, state, notifications, off‑screen audio |
-| `popup.html / .js / .css` | User interface                                           |
-| `offscreen.html / .js`    | Hidden page that actually plays the MP3s                 |
+### 🧭 Popup navigation/UI
+- Left-nav popup with sections for:
+  - Pomodoro ⏱️
+  - Website Block → Sites List / Time Schedule 🚫
+  - Settings ⚙️
+- Habit Tracker button exists in navigation UI, but no tracker functionality is wired yet 🛠️
 
 ---
 
-## Roadmap
+## 🧩 Installation (development)
 
-Contributions welcome via PR or discussion! Feel free to fork and customise.
+1. Clone this repository.
+2. Open Chrome and go to `chrome://extensions`.
+3. Enable **Developer mode**.
+4. Click **Load unpacked** and select the repository folder.
 
 ---
+
+## 🚀 Usage
+
+1. Open the extension popup.
+2. In **Pomodoro**, set timer values and save settings.
+3. Start your session with **Start**.
+4. In **Website Block → Sites List**, add/remove blocked domains or regex rules.
+5. In **Website Block → Time Schedule**, define intervals when blocking should be active.
+6. Optional: enable password protection in **Settings**.
+
+---
+
+## 🗂️ Project structure
+
+- `manifest.json` – MV3 permissions, popup, background, host permissions.
+- `service_worker.js` – timer engine, notifications, blocker rule installation, schedule checks.
+- `popup.html` / `popup.js` / `popup.css` / `popup_tailwind.css` – popup UI and interactions.
+- `offscreen.html` / `offscreen.js` – background audio playback.
+- `redirect-page.html` / `redirect-page.css` – page shown when a request is blocked.
+
+---
+
+## 📝 Notes
+
+- The extension requests broad host access (`<all_urls>`) to support user-defined website blocking.
+- `practice/tooltips.html` is an isolated practice/demo file and not part of runtime extension behavior.
